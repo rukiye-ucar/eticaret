@@ -1,0 +1,197 @@
+/* ===== Driver Panel Styles ===== */
+
+.driver-panel {
+    padding: 8px;
+}
+
+.driver-panel .driver-header {
+    margin-bottom: 24px;
+}
+
+.driver-panel .driver-header h2 {
+    color: #f9b17a;
+    font-size: 1.6rem;
+    margin-bottom: 4px;
+}
+
+.driver-panel .driver-header p {
+    color: #aab8d0;
+    font-size: 0.9rem;
+}
+
+/* Stats Cards */
+.driver-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.driver-stat-card {
+    flex: 1;
+    min-width: 160px;
+    background: linear-gradient(135deg, #2d2250 0%, #3a2f6e 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(249, 177, 122, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.driver-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.driver-stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.driver-stat-card .stat-icon.shipped {
+    background: rgba(24, 144, 255, 0.15);
+    color: #1890ff;
+}
+
+.driver-stat-card .stat-icon.delivered {
+    background: rgba(82, 196, 26, 0.15);
+    color: #52c41a;
+}
+
+.driver-stat-card .stat-icon.partial {
+    background: rgba(114, 46, 209, 0.15);
+    color: #722ed1;
+}
+
+.driver-stat-card .stat-info h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.driver-stat-card .stat-info span {
+    color: #8a8fb0;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Table Styling */
+.driver-panel .ant-table {
+    background: transparent;
+}
+
+.driver-panel .ant-table-thead>tr>th {
+    background: #2d2250 !important;
+    color: #f9b17a !important;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(249, 177, 122, 0.2);
+}
+
+.driver-panel .ant-table-tbody>tr>td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.driver-panel .ant-table-tbody>tr:hover>td {
+    background: rgba(249, 177, 122, 0.05) !important;
+}
+
+/* Product info in table */
+.delivery-product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.delivery-product-info .product-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid rgba(249, 177, 122, 0.3);
+}
+
+.delivery-product-info .product-name {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+/* Deliver Button */
+.deliver-btn {
+    background: linear-gradient(135deg, #f9b17a 0%, #f0883e 100%) !important;
+    border: none !important;
+    color: #1a1445 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    transition: all 0.25s ease !important;
+}
+
+.deliver-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 4px 16px rgba(249, 177, 122, 0.4) !important;
+}
+
+/* Empty State */
+.driver-empty {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.driver-empty .anticon {
+    font-size: 64px;
+    color: rgba(249, 177, 122, 0.3);
+    margin-bottom: 16px;
+}
+
+.driver-empty p {
+    color: #8a8fb0;
+    font-size: 1rem;
+}
+
+/* Modal Styling */
+.deliver-modal .ant-modal-header {
+    background: #2d2250;
+    border-bottom: 1px solid rgba(249, 177, 122, 0.2);
+}
+
+.deliver-modal .ant-modal-title {
+    color: #f9b17a !important;
+}
+
+.deliver-modal .order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+.deliver-modal .order-detail-row .label {
+    color: #8a8fb0;
+}
+
+.deliver-modal .order-detail-row .value {
+    font-weight: 600;
+    color: #f9b17a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .driver-stats {
+        flex-direction: column;
+    }
+
+    .driver-stat-card {
+        min-width: unset;
+    }
+}

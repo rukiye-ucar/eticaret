@@ -59,7 +59,7 @@ const Header = () => {
                     <Button
                         type="link"
                         icon={<CarOutlined />}
-                        // onClick={() => navigate('/driver')} // Placeholder
+                        onClick={() => navigate('/driver')}
                         style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
                     >
                         Driver Panel

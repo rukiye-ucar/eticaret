@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Header from './components/Header';
 import AuthPage from './pages/AuthPage';
 import AdminLayout from './layouts/AdminLayout';
+import DriverLayout from './layouts/DriverLayout';
 import ProductManagement from './pages/admin/ProductManagement'; // Import
 import OrderManagement from './pages/admin/OrderManagement';
 import UserManagement from './pages/admin/UserManagement'; // Updated Import
@@ -50,8 +51,10 @@ function App() {
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
               </Route>
 
-              {/* Driver Route */}
-              <Route path="/driver" element={<DriverPanel />} />
+              {/* Driver Routes */}
+              <Route path="/driver" element={<DriverLayout />}>
+                <Route index element={<DriverPanel />} />
+              </Route>
 
               {/* Auth Route */}
               <Route path="/login" element={<AuthPage />} />

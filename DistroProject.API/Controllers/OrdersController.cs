@@ -157,6 +157,21 @@ public class OrdersController : ControllerBase
             .ToListAsync();
     }
 
+    // 4b. Driver's Completed Deliveries (Driver Only)
+    [HttpGet("my-delivered")]
+    [Authorize(Roles = "Driver")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetMyDelivered()
+    {
+        var driverId = User.FindFirst("userId")?.Value;
+        return await _context.Orders
+            .Include(o => o.Product)
+            .Include(o => o.Customer)
+            .Where(o => o.DriverId == int.Parse(driverId!) && 
+                       (o.Status == "Delivered" || o.Status == "PartialDelivered"))
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+    }
+
     // 5. Deliver Order and Deduct from Stock (Driver Only)
 [HttpPut("deliver-order/{orderId}")]
 [Authorize(Roles = "Driver")]
