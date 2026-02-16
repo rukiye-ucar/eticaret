@@ -93,6 +93,12 @@ const CartPage = () => {
             <div className="cart-summary">
                 <span className="cart-total-label">Total:</span>
                 <span className="cart-total-price">${totalPrice.toFixed(2)}</span>
+                <button
+                    className="cart-checkout-btn"
+                    onClick={() => navigate('/checkout')}
+                >
+                    Siparişi Tamamla →
+                </button>
             </div>
         </div>
     );

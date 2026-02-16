@@ -1,0 +1,217 @@
+/* Success Page Container */
+.order-confirmation-page {
+    padding: 32px 48px;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-confirmation-card {
+    background: rgba(45, 34, 80, 0.85);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 48px 56px;
+    text-align: center;
+    border: 1px solid rgba(249, 177, 122, 0.15);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    max-width: 480px;
+    width: 100%;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success Circle Animation */
+.success-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
+    position: relative;
+}
+
+.success-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f9b17a, #e8834a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.5s ease-out 0.2s both;
+    box-shadow: 0 4px 24px rgba(249, 177, 122, 0.4);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-circle .checkmark-icon {
+    font-size: 48px;
+    color: #2d2250;
+    animation: drawCheck 0.4s ease-out 0.6s both;
+}
+
+@keyframes drawCheck {
+    from {
+        opacity: 0;
+        transform: scale(0) rotate(-45deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+/* Ripple rings */
+.success-icon-wrapper::before,
+.success-icon-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid rgba(249, 177, 122, 0.3);
+    transform: translate(-50%, -50%);
+    animation: ripple 1.5s ease-out 0.5s infinite;
+}
+
+.success-icon-wrapper::after {
+    animation-delay: 1s;
+}
+
+@keyframes ripple {
+    from {
+        width: 100px;
+        height: 100px;
+        opacity: 0.6;
+    }
+
+    to {
+        width: 180px;
+        height: 180px;
+        opacity: 0;
+    }
+}
+
+/* Text */
+.confirmation-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.confirmation-subtitle {
+    font-size: 1rem;
+    color: #aab8d0;
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+/* Confetti dots */
+.confetti-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+}
+
+.confetti-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: confettiFall 2s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-60px) rotate(0deg) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(80px) rotate(720deg) scale(0.3);
+    }
+}
+
+/* Button */
+.confirmation-btn {
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #f9b17a, #e8834a);
+    border: none;
+    border-radius: 14px;
+    color: #2d2250;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(249, 177, 122, 0.3);
+}
+
+.confirmation-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(249, 177, 122, 0.45);
+}
+
+.confirmation-btn:active {
+    transform: translateY(0);
+}
+
+.confirmation-order-id {
+    display: inline-block;
+    background: rgba(249, 177, 122, 0.15);
+    border: 1px solid rgba(249, 177, 122, 0.3);
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-bottom: 24px;
+    color: #f9b17a;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .order-confirmation-page {
+        padding: 16px;
+    }
+
+    .order-confirmation-card {
+        padding: 32px 24px;
+    }
+
+    .confirmation-title {
+        font-size: 1.4rem;
+    }
+}

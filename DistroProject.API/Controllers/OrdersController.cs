@@ -40,6 +40,63 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
+    // Checkout: Convert all cart items to orders and clear cart
+    [HttpPost("checkout")]
+    public async Task<ActionResult> Checkout()
+    {
+        var userId = User.FindFirst("userId")?.Value;
+        if (userId == null) return Unauthorized();
+
+        var uid = int.Parse(userId);
+
+        var cartItems = await _context.CartItems
+            .Where(c => c.UserId == uid)
+            .Include(c => c.Product)
+            .ToListAsync();
+
+        if (!cartItems.Any())
+            return BadRequest("Cart is empty!");
+
+        var orders = new List<Order>();
+
+        foreach (var item in cartItems)
+        {
+            if (item.Product == null) continue;
+
+            var order = new Order
+            {
+                ProductId = item.ProductId,
+                CustomerId = uid,
+                Quantity = item.Quantity,
+                TotalPrice = item.Product.Price * item.Quantity,
+                OrderDate = DateTime.Now,
+                Status = "Pending"
+            };
+
+            _context.Orders.Add(order);
+            orders.Add(order);
+        }
+
+        // Clear the cart
+        _context.CartItems.RemoveRange(cartItems);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(orders);
+    }
+
+    // Get all orders (Admin Only)
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+    {
+        return await _context.Orders
+            .Include(o => o.Product)
+            .Include(o => o.Customer)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+    }
+
     // 2. See Pending Orders (Admin Only)
     [HttpGet("pending")]
     [Authorize(Roles = "Admin")]
@@ -65,6 +122,27 @@ public class OrdersController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok(new { message = "Order assigned to driver and shipped!" });
+    }
+
+    // 3b. Assign Driver to multiple orders at once (Admin Only)
+    [HttpPut("assign-driver-bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AssignDriverBulk([FromQuery] int driverId, [FromBody] List<int> orderIds)
+    {
+        var orders = await _context.Orders
+            .Where(o => orderIds.Contains(o.Id))
+            .ToListAsync();
+
+        if (!orders.Any()) return NotFound("No orders found!");
+
+        foreach (var order in orders)
+        {
+            order.DriverId = driverId;
+            order.Status = "Shipped";
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { message = $"{orders.Count} orders assigned to driver and shipped!" });
     }
 
     // 4. Driver's Own Delivery List (Driver Only)

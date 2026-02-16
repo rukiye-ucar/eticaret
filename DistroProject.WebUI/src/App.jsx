@@ -12,6 +12,8 @@ import DriverPanel from './pages/driver/DriverPanel'; // Import
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderConfirmation from './pages/OrderConfirmation';
 
 const ConsumerLayout = () => (
   <div className="app-container">
@@ -44,6 +46,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
               </Route>
 
               {/* Driver Route */}

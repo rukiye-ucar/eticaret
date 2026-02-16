@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Empty, Spin, Typography } from 'antd';
-import { getProducts } from '../api/productService';
+import { getProducts, getCategories } from '../api/productService';
 import ProductCard from '../components/ProductCard';
 import FilterSidebar from '../components/FilterSidebar';
 import './ProductList.css';
@@ -13,20 +13,14 @@ const ProductList = () => {
     const [loading, setLoading] = useState(true);
 
     // Filter states
-    // Hardcoded categories as requested for visual frontend task
-    const [categories, setCategories] = useState([
-        'Sensors, Navigation',
-        'Propulsion',
-        'Sensors',
-        'Mechanical',
-        'Electronics'
-    ]);
+    const [categories, setCategories] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
-    const [priceRange, setPriceRange] = useState([50, 5000]);
-    const [maxPrice, setMaxPrice] = useState(5000);
+    const [priceRange, setPriceRange] = useState([0, 600]);
+    const [maxPrice, setMaxPrice] = useState(600);
 
     useEffect(() => {
         fetchProducts();
+        fetchCategories();
     }, []);
 
     useEffect(() => {
@@ -39,10 +33,12 @@ const ProductList = () => {
             const data = await getProducts();
             setProducts(data);
 
-            // We are using static categories for now as requested.
-            // keeping maxPrice logic just in case, but visual is 5000.
-            const max = Math.max(...data.map(p => p.price), 5000);
-            setMaxPrice(max > 5000 ? max : 5000);
+            // Calculate max price from the data
+            if (data.length > 0) {
+                const max = Math.max(...data.map(p => p.price), 600);
+                setMaxPrice(max > 600 ? max : 600);
+                setPriceRange([0, max > 600 ? max : 600]);
+            }
         } catch (error) {
             console.error("Failed to fetch products", error);
         } finally {
@@ -50,12 +46,27 @@ const ProductList = () => {
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const data = await getCategories();
+            // Map to unique category names for Checkbox.Group options
+            const categoryNames = [...new Set(data.map(c => c.name))];
+            setCategories(categoryNames);
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+        }
+    };
+
     const filterProducts = () => {
         let tempProducts = [...products];
 
-        // Filter by Category
+        // Filter by Category — product.categories is an array of { id, name }
         if (selectedCategories.length > 0) {
-            tempProducts = tempProducts.filter(p => selectedCategories.includes(p.categoryName || 'Diğer'));
+            tempProducts = tempProducts.filter(p => {
+                if (!p.categories || p.categories.length === 0) return false;
+                // Check if any of the product's categories match the selected ones
+                return p.categories.some(cat => selectedCategories.includes(cat.name));
+            });
         }
 
         // Filter by Price
@@ -113,3 +124,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+

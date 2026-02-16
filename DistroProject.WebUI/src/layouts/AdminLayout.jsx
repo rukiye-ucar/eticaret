@@ -2,8 +2,9 @@ import { Layout, Menu, theme } from 'antd';
 import { UploadOutlined, LogoutOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import SiteHeader from '../components/Header';
 
-const { Header, Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 
 const AdminLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -62,7 +63,9 @@ const AdminLayout = () => {
                 />
             </Sider>
             <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer }} />
+                <div style={{ background: '#2d2250' }}>
+                    <SiteHeader />
+                </div>
                 <Content style={{ margin: '0 16px' }}>
                     <div
                         style={{
