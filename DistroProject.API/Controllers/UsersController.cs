@@ -90,11 +90,13 @@ public class UsersController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public ActionResult<object> GetMe()
+    public async Task<ActionResult<object>> GetMe()
     {
         var userId = User.FindFirst("userId")?.Value;
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
-        return Ok(new { Id = userId, Role = role });
+        var user = await _context.Users.FindAsync(int.Parse(userId!));
+        if (user == null) return NotFound();
+        return Ok(new { Id = user.Id, Role = role, Name = user.Name, Email = user.Email, IsPremium = user.IsPremium, Balance = user.Balance });
     }
 
     [HttpGet("drivers")]
@@ -137,6 +139,15 @@ public class UsersController : ControllerBase
             .ToListAsync();
     }
 
+    [HttpGet("customers")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<User>>> GetCustomers()
+    {
+        return await _context.Users
+            .Where(u => u.Role == "Customer")
+            .ToListAsync();
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteUser(int id)
@@ -159,4 +170,53 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    // Set customer as premium by email (Admin only)
+    [HttpPut("set-premium")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> SetPremium([FromBody] SetPremiumDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (user == null) return NotFound("User not found with this email.");
+        if (user.Role != "Customer") return BadRequest("Only customers can be set as premium.");
+
+        user.IsPremium = dto.IsPremium;
+        await _context.SaveChangesAsync();
+        return Ok(new { message = $"User {user.Email} premium status: {user.IsPremium}" });
+    }
+
+    // Make payment (Premium customers only)
+    [HttpPost("make-payment")]
+    [Authorize]
+    public async Task<IActionResult> MakePayment([FromBody] PaymentDto dto)
+    {
+        var userId = User.FindFirst("userId")?.Value;
+        if (userId == null) return Unauthorized();
+
+        var user = await _context.Users.FindAsync(int.Parse(userId));
+        if (user == null) return NotFound();
+        if (!user.IsPremium) return BadRequest("Only premium users can make payments.");
+        if (dto.Amount <= 0) return BadRequest("Amount must be positive.");
+        
+        if (user.Balance >= 0) return BadRequest("You have no debt to pay.");
+        if (user.Balance + dto.Amount > 0) 
+        {
+            return BadRequest($"You can only pay up to {Math.Abs(user.Balance)} to clear your debt.");
+        }
+
+        user.Balance += dto.Amount;
+        await _context.SaveChangesAsync();
+        return Ok(new { message = "Payment successful!", balance = user.Balance });
+    }
+}
+
+public class SetPremiumDto
+{
+    public string Email { get; set; } = string.Empty;
+    public bool IsPremium { get; set; } = true;
+}
+
+public class PaymentDto
+{
+    public decimal Amount { get; set; }
 }

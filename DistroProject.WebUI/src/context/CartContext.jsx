@@ -34,12 +34,12 @@ export const CartProvider = ({ children }) => {
         fetchCart();
     }, [fetchCart]);
 
-    const addToCart = async (product) => {
+    const addToCart = async (product, qty = 1) => {
         if (!isAuthenticated) return;
         try {
             await axiosInstance.post('/Cart', {
                 productId: product.id,
-                quantity: 1
+                quantity: qty
             });
             await fetchCart(); // Reload cart from server
         } catch (error) {

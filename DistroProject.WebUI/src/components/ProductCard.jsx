@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
 
     return (
         <div className="product-card">
-            <div className="product-image-container">
+            <div className="product-image-container" onClick={() => navigate(`/products/${product.id}`)} style={{ cursor: 'pointer' }}>
                 <img
                     src={getImageUrl(product.image, product.imageContentType)}
                     alt={product.name}

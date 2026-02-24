@@ -1,0 +1,227 @@
+/* ===== Driver Management Page ===== */
+
+.driver-mgmt-page {
+    padding: 8px;
+}
+
+.driver-mgmt-header {
+    margin-bottom: 24px;
+}
+
+/* Stats */
+.driver-mgmt-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.dm-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #2d2250, #3a2f6e);
+    border-radius: 16px;
+    padding: 18px 24px;
+    border: 1px solid rgba(249, 177, 122, 0.12);
+    min-width: 180px;
+    flex: 1;
+}
+
+.dm-stat-card h3 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.dm-stat-card span {
+    color: #8a8fb0;
+    font-size: 0.85rem;
+}
+
+.dm-stat-icon {
+    font-size: 28px;
+    color: #f9b17a;
+}
+
+.dm-stat-icon.delivered {
+    color: #69b1ff;
+}
+
+.dm-stat-icon.success {
+    color: #52c41a;
+}
+
+/* Collapse / Accordion */
+.driver-collapse .ant-collapse-item {
+    background: linear-gradient(135deg, #2d2250, #352a5e) !important;
+    border-radius: 14px !important;
+    margin-bottom: 12px !important;
+    border: 1px solid rgba(249, 177, 122, 0.1) !important;
+    overflow: hidden;
+}
+
+.driver-collapse .ant-collapse-header {
+    padding: 16px 20px !important;
+    color: #ffffff !important;
+}
+
+.driver-collapse .ant-collapse-content {
+    background: rgba(20, 15, 45, 0.5) !important;
+    border-top: 1px solid rgba(249, 177, 122, 0.08) !important;
+}
+
+.driver-collapse .ant-collapse-content-box {
+    padding: 16px 20px !important;
+}
+
+.driver-collapse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.driver-name-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.driver-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.driver-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Customer Block */
+.customer-block {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid #f9b17a;
+}
+
+.customer-block:last-child {
+    margin-bottom: 0;
+}
+
+.customer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.customer-name {
+    font-weight: 700;
+    color: #f9b17a;
+    font-size: 1rem;
+}
+
+/* Order Rows */
+.customer-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.order-row:hover {
+    background: rgba(249, 177, 122, 0.08);
+}
+
+.order-row-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-product-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(249, 177, 122, 0.15);
+    flex-shrink: 0;
+}
+
+.order-product-img.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    color: #8a8fb0;
+    font-size: 0.8rem;
+}
+
+.order-product-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-product-name {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.order-product-qty {
+    color: #8a8fb0;
+    font-size: 0.8rem;
+}
+
+.order-row-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-price {
+    color: #f9b17a;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .driver-mgmt-stats {
+        flex-direction: column;
+    }
+
+    .driver-collapse-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .order-row-right {
+        margin-left: 54px;
+    }
+}

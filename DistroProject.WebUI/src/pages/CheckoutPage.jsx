@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { LockOutlined, CreditCardOutlined, ShoppingOutlined } from '@ant-design/icons';
+import { useAuth } from '../context/AuthContext';
+import { LockOutlined, CreditCardOutlined, ShoppingOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axiosInstance from '../api/axiosInstance';
 import './CheckoutPage.css';
 
 const CheckoutPage = () => {
     const { cartItems, clearCart } = useCart();
+    const { user, refreshUser } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [payLaterLoading, setPayLaterLoading] = useState(false);
 
     const [cardNumber, setCardNumber] = useState('');
     const [cardHolder, setCardHolder] = useState('');
@@ -62,13 +65,26 @@ const CheckoutPage = () => {
         setLoading(true);
         try {
             await axiosInstance.post('/Orders/checkout');
-            // Clear local cart state
             setLoading(false);
             navigate('/order-confirmation');
         } catch (error) {
             console.error('Checkout failed:', error);
             setLoading(false);
             alert('Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+    };
+
+    const handlePayLater = async () => {
+        setPayLaterLoading(true);
+        try {
+            await axiosInstance.post('/Orders/checkout-pay-later');
+            await refreshUser();
+            setPayLaterLoading(false);
+            navigate('/order-confirmation');
+        } catch (error) {
+            console.error('Pay later failed:', error);
+            setPayLaterLoading(false);
+            alert('İşlem sırasında bir hata oluştu. Lütfen tekrar deneyin.');
         }
     };
 
@@ -108,6 +124,34 @@ const CheckoutPage = () => {
                     <span className="checkout-total-label">Toplam</span>
                     <span className="checkout-total-amount">${totalPrice.toFixed(2)}</span>
                 </div>
+
+                {/* Pay Later for Premium */}
+                {user?.isPremium && (
+                    <div className="pay-later-section">
+                        <div className="pay-later-badge">
+                            ⭐ Premium Müşteri
+                        </div>
+                        <p className="pay-later-desc">
+                            Premium müşteri olarak siparişinizi şimdi verin, ödemeyi daha sonra yapın.
+                        </p>
+                        <button
+                            className="pay-later-btn"
+                            onClick={handlePayLater}
+                            disabled={payLaterLoading}
+                        >
+                            {payLaterLoading ? (
+                                <><div className="btn-spinner" /> İşleniyor...</>
+                            ) : (
+                                <><ClockCircleOutlined /> Daha Sonra Öde — ${totalPrice.toFixed(2)}</>
+                            )}
+                        </button>
+                        {user.balance < 0 && (
+                            <p className="pay-later-balance-warning">
+                                Mevcut borç: <strong>${Math.abs(user.balance).toFixed(2)}</strong>
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Payment Form */}

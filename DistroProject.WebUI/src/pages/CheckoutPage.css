@@ -356,3 +356,66 @@
         letter-spacing: 2px;
     }
 }
+
+/* Pay Later Section */
+.pay-later-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(249, 177, 122, 0.08), rgba(249, 177, 122, 0.02));
+    border: 1px solid rgba(249, 177, 122, 0.25);
+    border-radius: 16px;
+}
+
+.pay-later-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f9b17a, #e8834a);
+    color: #2d2250;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.pay-later-desc {
+    color: #aab8d0;
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.pay-later-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.pay-later-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
+}
+
+.pay-later-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pay-later-balance-warning {
+    color: #ff7875;
+    font-size: 0.82rem;
+    margin-top: 10px;
+    text-align: center;
+}

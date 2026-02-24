@@ -8,4 +8,6 @@ public class User
     public string PasswordHash { get; set; } = string.Empty; // We won't store the password in plain text!
     public string Role { get; set; } = "Customer"; // Admin, Customer, Driver
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public bool IsPremium { get; set; } = false;
+    public decimal Balance { get; set; } = 0; // Negative = debt
 }

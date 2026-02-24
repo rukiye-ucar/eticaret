@@ -25,6 +25,15 @@ public class ProductsController : ControllerBase
         return await _context.Products.Include(p => p.Categories).ToListAsync();
     }
 
+    // Get single product by ID
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Product>> GetProduct(int id)
+    {
+        var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null) return NotFound();
+        return product;
+    }
+
     // ONLY ADMINS CAN ADD PRODUCTS
     [HttpPost]
     [Authorize(Roles = "Admin")]

@@ -40,6 +40,20 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
+    // Get current customer's orders
+    [HttpGet("my-orders")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetMyOrders()
+    {
+        var userId = User.FindFirst("userId")?.Value;
+        if (userId == null) return Unauthorized();
+
+        return await _context.Orders
+            .Include(o => o.Product)
+            .Where(o => o.CustomerId == int.Parse(userId))
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+    }
+
     // Checkout: Convert all cart items to orders and clear cart
     [HttpPost("checkout")]
     public async Task<ActionResult> Checkout()
@@ -85,6 +99,61 @@ public class OrdersController : ControllerBase
         return Ok(orders);
     }
 
+    // Pay Later checkout for premium customers
+    [HttpPost("checkout-pay-later")]
+    public async Task<ActionResult> CheckoutPayLater()
+    {
+        var userId = User.FindFirst("userId")?.Value;
+        if (userId == null) return Unauthorized();
+
+        var uid = int.Parse(userId);
+        var user = await _context.Users.FindAsync(uid);
+        if (user == null) return NotFound();
+        if (!user.IsPremium) return BadRequest("Only premium customers can use pay later.");
+
+        var cartItems = await _context.CartItems
+            .Where(c => c.UserId == uid)
+            .Include(c => c.Product)
+            .ToListAsync();
+
+        if (!cartItems.Any())
+            return BadRequest("Cart is empty!");
+
+        var orders = new List<Order>();
+        decimal totalAmount = 0;
+
+        foreach (var item in cartItems)
+        {
+            if (item.Product == null) continue;
+
+            var orderTotal = item.Product.Price * item.Quantity;
+            totalAmount += orderTotal;
+
+            var order = new Order
+            {
+                ProductId = item.ProductId,
+                CustomerId = uid,
+                Quantity = item.Quantity,
+                TotalPrice = orderTotal,
+                OrderDate = DateTime.Now,
+                Status = "Pending"
+            };
+
+            _context.Orders.Add(order);
+            orders.Add(order);
+        }
+
+        // Deduct from balance (goes negative = debt)
+        user.Balance -= totalAmount;
+
+        // Clear the cart
+        _context.CartItems.RemoveRange(cartItems);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { orders, balance = user.Balance });
+    }
+
     // Get all orders (Admin Only)
     [HttpGet("all")]
     [Authorize(Roles = "Admin")]
@@ -93,6 +162,7 @@ public class OrdersController : ControllerBase
         return await _context.Orders
             .Include(o => o.Product)
             .Include(o => o.Customer)
+            .Include(o => o.Driver)
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
     }

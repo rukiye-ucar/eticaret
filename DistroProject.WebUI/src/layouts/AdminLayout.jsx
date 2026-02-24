@@ -53,6 +53,12 @@ const AdminLayout = () => {
                             onClick: () => navigate('/admin/products'),
                         },
                         {
+                            key: '/admin/drivers',
+                            icon: <UnorderedListOutlined />,
+                            label: 'Şoför Yönetimi',
+                            onClick: () => navigate('/admin/drivers'),
+                        },
+                        {
                             key: 'logout',
                             icon: <LogoutOutlined />,
                             label: 'Çıkış Yap',

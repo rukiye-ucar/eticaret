@@ -9,33 +9,68 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Check for token on mount
+    const fetchMe = async () => {
         const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                // Basic check effectively "logging in" via token
-                setUser({
-                    email: payload.email || 'User', // payload might not have email depending on backend
-                    role: payload.role || 'User'
-                });
-            } catch (error) {
-                console.error("Invalid token:", error);
-                localStorage.removeItem('token');
+        if (!token) return null;
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                return {
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                    isPremium: data.isPremium,
+                    balance: data.balance,
+                };
             }
+        } catch (err) {
+            console.error('Failed to fetch user info:', err);
         }
-        setLoading(false);
+        return null;
+    };
+
+    useEffect(() => {
+        const init = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Quick decode for role first
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    setUser({
+                        role: payload.role || 'Customer'
+                    });
+                } catch (error) {
+                    console.error("Invalid token:", error);
+                    localStorage.removeItem('token');
+                }
+                // Fetch full info
+                const fullUser = await fetchMe();
+                if (fullUser) setUser(fullUser);
+            }
+            setLoading(false);
+        };
+        init();
     }, []);
 
-    const login = (token) => {
+    const refreshUser = async () => {
+        const fullUser = await fetchMe();
+        if (fullUser) setUser(fullUser);
+    };
+
+    const login = async (token) => {
         localStorage.setItem('token', token);
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             setUser({
-                email: payload.email,
-                role: payload.role
+                role: payload.role || 'Customer'
             });
+            // Fetch full info
+            const fullUser = await fetchMe();
+            if (fullUser) setUser(fullUser);
             return true;
         } catch (error) {
             console.error("Login token error:", error);
@@ -50,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );
