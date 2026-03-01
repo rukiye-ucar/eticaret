@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, InputNumber, Select, Upload, message, Card, Popconfirm, Image, Tag } from 'antd';
+import { Button, Modal, Form, Input, InputNumber, Select, Upload, message, Card, Popconfirm, Image, Tag } from 'antd';
 import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
@@ -17,14 +17,12 @@ const ProductManagement = () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products`);
             if (response.ok) {
-                const data = await response.json();
-                setProducts(data);
+                setProducts(await response.json());
             } else {
-                message.error('Ürünler getirilemedi.');
+                message.error('Failed to load products.');
             }
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            message.error('Bir hata oluştu.');
+        } catch {
+            message.error('An error occurred.');
         } finally {
             setLoading(false);
         }
@@ -33,25 +31,13 @@ const ProductManagement = () => {
     const fetchCategories = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/categories`);
-            if (response.ok) {
-                const data = await response.json();
-                setCategories(data);
-            }
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
+            if (response.ok) setCategories(await response.json());
+        } catch { console.error('Error fetching categories'); }
     };
 
-    useEffect(() => {
-        fetchProducts();
-        fetchCategories();
-    }, []);
+    useEffect(() => { fetchProducts(); fetchCategories(); }, []);
 
-    const handleAddClick = () => {
-        setEditingProduct(null);
-        form.resetFields();
-        setIsModalVisible(true);
-    };
+    const handleAddClick = () => { setEditingProduct(null); form.resetFields(); setIsModalVisible(true); };
 
     const handleEditClick = (product) => {
         setEditingProduct(product);
@@ -70,21 +56,17 @@ const ProductManagement = () => {
             const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
             if (response.ok) {
-                message.success('Ürün başarıyla silindi.');
+                message.success('Product deleted successfully.');
                 fetchProducts();
             } else {
                 const errorText = await response.text();
-                message.error(`Silme başarısız: ${errorText}`);
+                message.error(`Delete failed: ${errorText}`);
             }
-        } catch (error) {
-            console.error('Error deleting product:', error);
-            message.error('Bir hata oluştu.');
+        } catch {
+            message.error('An error occurred.');
         }
     };
 
@@ -94,172 +76,106 @@ const ProductManagement = () => {
         formData.append('Price', values.price);
         formData.append('UnitType', values.unitType);
         formData.append('Stock', values.stock);
-
-        if (values.categoryIds) {
-            values.categoryIds.forEach(id => {
-                formData.append('CategoryIds', id);
-            });
-        }
-
-        if (values.image && values.image.fileList.length > 0) {
-            formData.append('ImageFile', values.image.fileList[0].originFileObj);
-        }
+        if (values.categoryIds) values.categoryIds.forEach(id => formData.append('CategoryIds', id));
+        if (values.image?.fileList?.length > 0) formData.append('ImageFile', values.image.fileList[0].originFileObj);
 
         const url = editingProduct
             ? `${import.meta.env.VITE_API_BASE_URL}/products/${editingProduct.id}`
             : `${import.meta.env.VITE_API_BASE_URL}/products`;
 
-        const method = editingProduct ? 'PUT' : 'POST';
-
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
+                method: editingProduct ? 'PUT' : 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData,
             });
-
             if (response.ok) {
-                message.success(`Ürün başarıyla ${editingProduct ? 'güncellendi' : 'eklendi'}!`);
+                message.success(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
                 setIsModalVisible(false);
                 form.resetFields();
                 fetchProducts();
             } else {
                 const errorText = await response.text();
-                message.error(`İşlem başarısız: ${errorText}`);
+                message.error(`Operation failed: ${errorText}`);
             }
-        } catch (error) {
-            console.error('Error saving product:', error);
-            message.error('Bir hata oluştu.');
+        } catch {
+            message.error('An error occurred.');
         }
     };
-
-    const columns = [
-        {
-            title: 'Görsel',
-            dataIndex: 'image',
-            key: 'image',
-            render: (image) => image ? (
-                <Image
-                    src={`data:image/jpeg;base64,${image}`}
-                    width={50}
-                    height={50}
-                    style={{ objectFit: 'cover' }}
-                />
-            ) : <div style={{ width: 50, height: 50, background: '#f0f0f0' }}>No Img</div>,
-        },
-        {
-            title: 'Ürün Adı',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Fiyat',
-            dataIndex: 'price',
-            key: 'price',
-            render: (price) => `$${price}`,
-        },
-        {
-            title: 'Stok',
-            dataIndex: 'stock',
-            key: 'stock',
-        },
-        {
-            title: 'Birim',
-            dataIndex: 'unitType',
-            key: 'unitType',
-        },
-        {
-            title: 'Kategoriler',
-            dataIndex: 'categories',
-            key: 'categories',
-            render: (categories) => (
-                <>
-                    {categories?.map(cat => (
-                        <Tag key={cat.id} color="blue">{cat.name}</Tag>
-                    ))}
-                </>
-            ),
-        },
-        {
-            title: 'İşlemler',
-            key: 'actions',
-            render: (_, record) => (
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <Button
-                        icon={<EditOutlined />}
-                        onClick={() => handleEditClick(record)}
-                        size="small"
-                    >
-                        Düzenle
-                    </Button>
-                    <Popconfirm
-                        title="Ürünü Sil"
-                        description="Bu ürünü silmek istediğinize emin misiniz?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Evet"
-                        cancelText="Hayır"
-                    >
-                        <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            size="small"
-                        >
-                            Sil
-                        </Button>
-                    </Popconfirm>
-                </div>
-            ),
-        },
-    ];
 
     return (
         <div>
             <Card
-                title="Ürün Yönetimi"
+                title="Product Management"
                 extra={
                     <Button type="primary" icon={<PlusOutlined />} onClick={handleAddClick}>
-                        Yeni Ürün Ekle
+                        Add Product
                     </Button>
                 }
             >
-                <Table
-                    dataSource={products}
-                    columns={columns}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: 32 }}>Loading...</div>
+                ) : products.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 32, color: '#aaa' }}>No products found.</div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {products.map(product => (
+                            <div key={product.id} style={{
+                                display: 'flex', alignItems: 'center', gap: 12,
+                                padding: '12px 16px', borderRadius: 10, background: '#fafafa',
+                                border: '1px solid #e8e8e8', flexWrap: 'wrap'
+                            }}>
+                                {/* Image */}
+                                <div style={{ flexShrink: 0 }}>
+                                    {product.image ? (
+                                        <Image src={`data:image/jpeg;base64,${product.image}`} width={56} height={56} style={{ objectFit: 'cover', borderRadius: 8 }} />
+                                    ) : (
+                                        <div style={{ width: 56, height: 56, background: '#f0f0f0', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb', fontSize: '0.75rem' }}>No Img</div>
+                                    )}
+                                </div>
+                                {/* Info */}
+                                <div style={{ flex: 1, minWidth: 140 }}>
+                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{product.name}</div>
+                                    <div style={{ color: '#888', fontSize: '0.82rem' }}>Stock: {product.stock} · {product.unitType}</div>
+                                    <div style={{ marginTop: 4 }}>
+                                        {product.categories?.map(cat => <Tag key={cat.id} color="blue">{cat.name}</Tag>)}
+                                    </div>
+                                </div>
+                                {/* Price + Actions */}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                                    <span style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>${product.price}</span>
+                                    <div style={{ display: 'flex', gap: 6 }}>
+                                        <Button icon={<EditOutlined />} size="small" onClick={() => handleEditClick(product)}>Edit</Button>
+                                        <Popconfirm
+                                            title="Delete Product"
+                                            description="Are you sure you want to delete this product?"
+                                            onConfirm={() => handleDelete(product.id)}
+                                            okText="Yes, Delete"
+                                            cancelText="Cancel"
+                                        >
+                                            <Button danger icon={<DeleteOutlined />} size="small">Delete</Button>
+                                        </Popconfirm>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </Card>
 
             <Modal
-                title={editingProduct ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}
+                title={editingProduct ? 'Edit Product' : 'Add New Product'}
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 footer={null}
                 destroyOnClose
             >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmit}
-                    initialValues={{ unitType: 'Piece' }}
-                >
-                    <Form.Item
-                        name="name"
-                        label="Ürün Adı"
-                        rules={[{ required: true, message: 'Please enter product name' }]}
-                    >
+                <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ unitType: 'Piece' }}>
+                    <Form.Item name="name" label="Product Name" rules={[{ required: true, message: 'Please enter product name' }]}>
                         <Input placeholder="Enter product name" />
                     </Form.Item>
-
-                    <Form.Item
-                        name="price"
-                        label="Fiyat"
-                        rules={[{ required: true, message: 'Please enter price' }]}
-                    >
+                    <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please enter price' }]}>
                         <InputNumber
                             style={{ width: '100%' }}
                             formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -267,56 +183,29 @@ const ProductManagement = () => {
                             min={0}
                         />
                     </Form.Item>
-
-                    <Form.Item
-                        name="categoryIds"
-                        label="Kategoriler"
-                        rules={[{ required: true, message: 'Please select at least one category' }]}
-                    >
+                    <Form.Item name="categoryIds" label="Categories" rules={[{ required: true, message: 'Please select at least one category' }]}>
                         <Select mode="multiple" placeholder="Select categories">
-                            {categories.map(category => (
-                                <Option key={category.id} value={category.id}>{category.name}</Option>
-                            ))}
+                            {categories.map(cat => <Option key={cat.id} value={cat.id}>{cat.name}</Option>)}
                         </Select>
                     </Form.Item>
-
-                    <Form.Item
-                        name="unitType"
-                        label="Birim Türü"
-                        rules={[{ required: true }]}
-                    >
+                    <Form.Item name="unitType" label="Unit Type" rules={[{ required: true }]}>
                         <Select>
-                            <Option value="Piece">Adet (Piece)</Option>
+                            <Option value="Piece">Piece</Option>
                             <Option value="Kg">Kilogram (Kg)</Option>
-                            <Option value="Liter">Litre (Liter)</Option>
+                            <Option value="Liter">Liter</Option>
                         </Select>
                     </Form.Item>
-
-                    <Form.Item
-                        name="stock"
-                        label="Stok Miktarı"
-                        rules={[{ required: true, message: 'Please enter stock quantity' }]}
-                    >
+                    <Form.Item name="stock" label="Stock Quantity" rules={[{ required: true, message: 'Please enter stock quantity' }]}>
                         <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
-
-                    <Form.Item
-                        name="image"
-                        label="Ürün Görseli"
-                        extra={editingProduct && "Yeni bir dosya yüklemezseniz mevcut görsel korunur."}
-                    >
-                        <Upload
-                            beforeUpload={() => false}
-                            listType="picture"
-                            maxCount={1}
-                        >
-                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                    <Form.Item name="image" label="Product Image" extra={editingProduct && 'Existing image will be kept if no new file is uploaded.'}>
+                        <Upload beforeUpload={() => false} listType="picture" maxCount={1}>
+                            <Button icon={<UploadOutlined />}>Upload Image</Button>
                         </Upload>
                     </Form.Item>
-
                     <Form.Item>
                         <Button type="primary" htmlType="submit" loading={loading} block>
-                            {editingProduct ? "Güncelle" : "Ekle"}
+                            {editingProduct ? 'Update Product' : 'Add Product'}
                         </Button>
                     </Form.Item>
                 </Form>

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using DistroProject.API.Data;
 using DistroProject.API.Models;
+using DistroProject.API.DTOs;
 using System.Security.Claims;
 
 namespace DistroProject.API.Controllers;
@@ -56,7 +57,7 @@ public class OrdersController : ControllerBase
 
     // Checkout: Convert all cart items to orders and clear cart
     [HttpPost("checkout")]
-    public async Task<ActionResult> Checkout()
+    public async Task<ActionResult> Checkout([FromBody] DeliveryCheckoutDto? dto = null)
     {
         var userId = User.FindFirst("userId")?.Value;
         if (userId == null) return Unauthorized();
@@ -84,7 +85,11 @@ public class OrdersController : ControllerBase
                 Quantity = item.Quantity,
                 TotalPrice = item.Product.Price * item.Quantity,
                 OrderDate = DateTime.Now,
-                Status = "Pending"
+                Status = "Pending",
+                DeliveryLat = dto?.DeliveryLat,
+                DeliveryLng = dto?.DeliveryLng,
+                DeliveryAddress = dto?.DeliveryAddress,
+                DeliveryAddressId = dto?.DeliveryAddressId
             };
 
             _context.Orders.Add(order);
@@ -101,7 +106,7 @@ public class OrdersController : ControllerBase
 
     // Pay Later checkout for premium customers
     [HttpPost("checkout-pay-later")]
-    public async Task<ActionResult> CheckoutPayLater()
+    public async Task<ActionResult> CheckoutPayLater([FromBody] DeliveryCheckoutDto? dto = null)
     {
         var userId = User.FindFirst("userId")?.Value;
         if (userId == null) return Unauthorized();
@@ -136,7 +141,11 @@ public class OrdersController : ControllerBase
                 Quantity = item.Quantity,
                 TotalPrice = orderTotal,
                 OrderDate = DateTime.Now,
-                Status = "Pending"
+                Status = "Pending",
+                DeliveryLat = dto?.DeliveryLat,
+                DeliveryLng = dto?.DeliveryLng,
+                DeliveryAddress = dto?.DeliveryAddress,
+                DeliveryAddressId = dto?.DeliveryAddressId
             };
 
             _context.Orders.Add(order);
@@ -223,6 +232,7 @@ public class OrdersController : ControllerBase
         var driverId = User.FindFirst("userId")?.Value;
         return await _context.Orders
             .Include(o => o.Product)
+            .Include(o => o.Customer)
             .Where(o => o.DriverId == int.Parse(driverId!) && o.Status == "Shipped")
             .ToListAsync();
     }

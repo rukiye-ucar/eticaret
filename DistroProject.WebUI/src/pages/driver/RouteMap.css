@@ -1,0 +1,91 @@
+.routemap-wrapper {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.routemap-canvas {
+    width: 100%;
+    height: 500px;
+}
+
+/* Custom markers */
+.route-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    border: 3px solid #fff;
+}
+
+.driver-marker {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #f9b17a, #e0843c);
+    font-size: 1.3rem;
+    border-color: #f9b17a;
+}
+
+.stop-marker {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #4a9eff, #1a6ecc);
+    font-size: 0.85rem;
+    border-color: #4a9eff;
+}
+
+/* Popup styles (injected into Leaflet) */
+.route-popup {
+    font-family: 'Inter', system-ui, sans-serif;
+    min-width: 180px;
+}
+
+.route-popup-seq {
+    font-weight: 800;
+    color: #4a9eff;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.route-popup-customer,
+.route-popup-product,
+.route-popup-address {
+    font-size: 0.8rem;
+    margin: 4px 0;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Empty state */
+.routemap-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.routemap-empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.routemap-empty-hint {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    margin-top: 6px;
+}

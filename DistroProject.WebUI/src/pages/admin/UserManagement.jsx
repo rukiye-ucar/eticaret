@@ -1,72 +1,57 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, message, Card, Tabs, Tag, Popconfirm, Tooltip } from 'antd';
-import { UserAddOutlined, CarOutlined, SafetyCertificateOutlined, DeleteOutlined, TeamOutlined, StarOutlined, StarFilled, DollarOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Modal, Form, Input, message, Card, Tabs, Tag, Popconfirm } from 'antd';
+import { UserAddOutlined, CarOutlined, SafetyCertificateOutlined, DeleteOutlined, TeamOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [activeTab, setActiveTab] = useState('drivers');
+    const [searchText, setSearchText] = useState('');
     const [form] = Form.useForm();
 
     const fetchUsers = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            let endpoint = '';
-            if (activeTab === 'drivers') endpoint = '/users/drivers';
-            else if (activeTab === 'admins') endpoint = '/users/admins';
-            else if (activeTab === 'customers') endpoint = '/users/customers';
-
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const endpointMap = { drivers: '/users/drivers', admins: '/users/admins', customers: '/users/customers' };
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpointMap[activeTab]}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
-                const data = await response.json();
-                setUsers(data);
+                setUsers(await response.json());
             } else {
-                message.error('Kullanıcılar getirilemedi.');
+                message.error('Failed to load users.');
             }
-        } catch (error) {
-            console.error('Error fetching users:', error);
-            message.error('Bir hata oluştu.');
+        } catch {
+            message.error('An error occurred.');
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, [activeTab]);
+    useEffect(() => { fetchUsers(); }, [activeTab]);
 
     const handleAddUser = async (values) => {
         try {
             const token = localStorage.getItem('token');
             const endpoint = activeTab === 'drivers' ? '/users/create-driver' : '/users/create-admin';
-
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(values),
             });
-
             if (response.ok) {
-                message.success(`${activeTab === 'drivers' ? 'Sürücü' : 'Yönetici'} başarıyla eklendi!`);
+                message.success(`${activeTab === 'drivers' ? 'Driver' : 'Admin'} added successfully!`);
                 setIsModalVisible(false);
                 form.resetFields();
                 fetchUsers();
             } else {
                 const errorData = await response.text();
-                message.error(`Hata: ${errorData}`);
+                message.error(`Error: ${errorData}`);
             }
-        } catch (error) {
-            console.error('Error adding user:', error);
-            message.error('Kullanıcı eklenirken bir hata oluştu.');
+        } catch {
+            message.error('Failed to add user.');
         }
     };
 
@@ -75,21 +60,17 @@ const UserManagement = () => {
             const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
             if (response.ok) {
-                message.success('Kullanıcı başarıyla silindi.');
+                message.success('User deleted successfully.');
                 fetchUsers();
             } else {
                 const errorData = await response.text();
-                message.error(`Silme işlemi başarısız: ${errorData}`);
+                message.error(`Delete failed: ${errorData}`);
             }
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            message.error('Kullanıcı silinirken bir hata oluştu.');
+        } catch {
+            message.error('Failed to delete user.');
         }
     };
 
@@ -99,177 +80,49 @@ const UserManagement = () => {
             const newStatus = !user.isPremium;
             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/set-premium`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ email: user.email, isPremium: newStatus }),
             });
             if (res.ok) {
-                message.success(`${user.name} premium durumu güncellendi!`);
+                message.success(`${user.name} premium status updated!`);
                 fetchUsers();
             } else {
                 const err = await res.text();
-                message.error(`Hata: ${err}`);
+                message.error(`Error: ${err}`);
             }
-        } catch (err) {
-            message.error('İşlem sırasında bir hata oluştu.');
+        } catch {
+            message.error('An error occurred.');
         }
     };
 
-    const baseColumns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            width: 80,
-        },
-        {
-            title: 'İsim',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'E-posta',
-            dataIndex: 'email',
-            key: 'email',
-        },
-    ];
-
-    let columns = [...baseColumns];
-
-    if (activeTab === 'customers') {
-        columns.push(
-            {
-                title: 'Bakiye',
-                dataIndex: 'balance',
-                key: 'balance',
-                render: (balance) => (
-                    <Tag color={balance < 0 ? 'red' : 'green'}>
-                        {balance < 0 ? `-$${Math.abs(balance).toFixed(2)}` : `$${balance?.toFixed(2)}`}
-                    </Tag>
-                )
-            },
-            {
-                title: 'Premium',
-                dataIndex: 'isPremium',
-                key: 'isPremium',
-                render: (isPremium) => (
-                    isPremium ?
-                        <Tag color="gold" icon={<StarFilled />}>Premium</Tag> :
-                        <Tag color="default" icon={<StarOutlined />}>Standart</Tag>
-                )
-            },
-            {
-                title: 'İşlemler',
-                key: 'actions',
-                render: (_, record) => (
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            type={record.isPremium ? 'default' : 'primary'}
-                            onClick={() => handleTogglePremium(record)}
-                            icon={record.isPremium ? <StarOutlined /> : <StarFilled />}
-                            style={!record.isPremium ? { background: 'linear-gradient(135deg, #f9b17a, #e8834a)', borderColor: '#e8834a' } : {}}
-                        >
-                            {record.isPremium ? 'Premium İptal' : 'Premium Yap'}
-                        </Button>
-                        <Popconfirm
-                            title="Kullanıcıyı Sil"
-                            description="Bu müşteriyi silmek istediğinize emin misiniz?"
-                            onConfirm={() => handleDeleteUser(record.id)}
-                            okText="Evet"
-                            cancelText="Hayır"
-                        >
-                            <Button danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </div>
-                )
-            }
-        );
-    } else {
-        columns.push(
-            {
-                title: 'Rol',
-                dataIndex: 'role',
-                key: 'role',
-                render: (role) => (
-                    <Tag color={role === 'Admin' ? 'red' : 'blue'}>
-                        {role === 'Admin' ? 'Yönetici' : 'Sürücü'}
-                    </Tag>
-                )
-            },
-            {
-                title: 'İşlemler',
-                key: 'actions',
-                render: (_, record) => (
-                    <Popconfirm
-                        title="Kullanıcıyı Sil"
-                        description={`Bu ${record.role === 'Admin' ? 'yöneticiyi' : 'sürücüyü'} silmek istediğinize emin misiniz?`}
-                        onConfirm={() => handleDeleteUser(record.id)}
-                        okText="Evet"
-                        cancelText="Hayır"
-                    >
-                        <Button danger icon={<DeleteOutlined />} size="small">
-                            Sil
-                        </Button>
-                    </Popconfirm>
-                )
-            }
-        );
-    }
-
-    const items = [
-        {
-            key: 'drivers',
-            label: (
-                <span>
-                    <CarOutlined />
-                    Sürücüler
-                </span>
-            ),
-        },
-        {
-            key: 'admins',
-            label: (
-                <span>
-                    <SafetyCertificateOutlined />
-                    Yöneticiler
-                </span>
-            ),
-        },
-        {
-            key: 'customers',
-            label: (
-                <span>
-                    <TeamOutlined />
-                    Müşteriler
-                </span>
-            ),
-        },
-    ];
-
-    const [searchText, setSearchText] = useState('');
-
-    const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchText.toLowerCase())
+    const filteredUsers = users.filter(u =>
+        u.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        u.email?.toLowerCase().includes(searchText.toLowerCase())
     );
+
+    const tabs = [
+        { key: 'drivers', label: <span><CarOutlined style={{ marginRight: 4 }} />Drivers</span> },
+        { key: 'admins', label: <span><SafetyCertificateOutlined style={{ marginRight: 4 }} />Admins</span> },
+        { key: 'customers', label: <span><TeamOutlined style={{ marginRight: 4 }} />Customers</span> },
+    ];
+
+    const roleLabel = (role) => role === 'Admin' ? 'Admin' : 'Driver';
 
     return (
         <div>
             <Card
-                title="Kullanıcı Yönetimi"
+                title="User Management"
                 extra={
-                    <div style={{ display: 'flex', gap: 10 }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <Input
-                            placeholder="İsim veya E-posta ara..."
+                            placeholder="Search name or email..."
                             value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
+                            onChange={e => setSearchText(e.target.value)}
                             style={{ width: 200 }}
                         />
                         {activeTab !== 'customers' && (
                             <Button type="primary" icon={<UserAddOutlined />} onClick={() => setIsModalVisible(true)}>
-                                {activeTab === 'drivers' ? 'Sürücü Ekle' : 'Yönetici Ekle'}
+                                {activeTab === 'drivers' ? 'Add Driver' : 'Add Admin'}
                             </Button>
                         )}
                     </div>
@@ -277,61 +130,90 @@ const UserManagement = () => {
             >
                 <Tabs
                     defaultActiveKey="drivers"
-                    items={items}
-                    onChange={(key) => {
-                        setActiveTab(key);
-                        setSearchText('');
-                    }}
+                    items={tabs}
+                    onChange={key => { setActiveTab(key); setSearchText(''); }}
                     style={{ marginBottom: 16 }}
                 />
 
-                <Table
-                    dataSource={filteredUsers}
-                    columns={columns}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{ pageSize: 8 }}
-                />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: 32 }}>Loading...</div>
+                ) : filteredUsers.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 32, color: '#aaa' }}>No users found.</div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {filteredUsers.map(user => (
+                            <div key={user.id} style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                padding: '12px 16px', borderRadius: 10, background: '#fafafa',
+                                border: '1px solid #e8e8e8', flexWrap: 'wrap', gap: 8
+                            }}>
+                                <div style={{ flex: 1, minWidth: 160 }}>
+                                    <div style={{ fontWeight: 600 }}>{user.name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: '#888' }}>{user.email}</div>
+                                    {activeTab === 'customers' && (
+                                        <div style={{ marginTop: 2 }}>
+                                            <Tag color={user.balance < 0 ? 'red' : 'green'}>
+                                                Balance: {user.balance < 0 ? `-$${Math.abs(user.balance).toFixed(2)}` : `$${user.balance?.toFixed(2)}`}
+                                            </Tag>
+                                            {user.isPremium
+                                                ? <Tag color="gold" icon={<StarFilled />}>Premium</Tag>
+                                                : <Tag color="default" icon={<StarOutlined />}>Standard</Tag>
+                                            }
+                                        </div>
+                                    )}
+                                    {activeTab !== 'customers' && (
+                                        <Tag color={user.role === 'Admin' ? 'red' : 'blue'} style={{ marginTop: 2 }}>
+                                            {roleLabel(user.role)}
+                                        </Tag>
+                                    )}
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                    {activeTab === 'customers' && (
+                                        <Button
+                                            type={user.isPremium ? 'default' : 'primary'}
+                                            onClick={() => handleTogglePremium(user)}
+                                            icon={user.isPremium ? <StarOutlined /> : <StarFilled />}
+                                            size="small"
+                                            style={!user.isPremium ? { background: 'linear-gradient(135deg,#f9b17a,#e8834a)', borderColor: '#e8834a' } : {}}
+                                        >
+                                            {user.isPremium ? 'Remove Premium' : 'Make Premium'}
+                                        </Button>
+                                    )}
+                                    <Popconfirm
+                                        title="Delete User"
+                                        description={`Are you sure you want to delete this ${activeTab === 'admins' ? 'admin' : activeTab === 'drivers' ? 'driver' : 'customer'}?`}
+                                        onConfirm={() => handleDeleteUser(user.id)}
+                                        okText="Yes, Delete"
+                                        cancelText="Cancel"
+                                    >
+                                        <Button danger icon={<DeleteOutlined />} size="small">Delete</Button>
+                                    </Popconfirm>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </Card>
 
             <Modal
-                title={activeTab === 'drivers' ? 'Yeni Sürücü Ekle' : 'Yeni Yönetici Ekle'}
+                title={activeTab === 'drivers' ? 'Add New Driver' : 'Add New Admin'}
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 footer={null}
             >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleAddUser}
-                >
-                    <Form.Item
-                        name="username"
-                        label="Kullanıcı Adı"
-                        rules={[{ required: true, message: 'Lütfen kullanıcı adı girin!' }]}
-                    >
+                <Form form={form} layout="vertical" onFinish={handleAddUser}>
+                    <Form.Item name="username" label="Username" rules={[{ required: true, message: 'Please enter a username!' }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="email"
-                        label="E-posta"
-                        rules={[
-                            { required: true, message: 'Lütfen e-posta girin!' },
-                            { type: 'email', message: 'Geçerli bir e-posta girin!' }
-                        ]}
-                    >
+                    <Form.Item name="email" label="Email" rules={[{ required: true, message: 'Please enter an email!' }, { type: 'email', message: 'Please enter a valid email!' }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="password"
-                        label="Şifre"
-                        rules={[{ required: true, message: 'Lütfen şifre girin!' }]}
-                    >
+                    <Form.Item name="password" label="Password" rules={[{ required: true, message: 'Please enter a password!' }]}>
                         <Input.Password />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block>
-                            {activeTab === 'drivers' ? 'Sürücü Ekle' : 'Yönetici Ekle'}
+                            {activeTab === 'drivers' ? 'Add Driver' : 'Add Admin'}
                         </Button>
                     </Form.Item>
                 </Form>

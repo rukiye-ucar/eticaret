@@ -25,4 +25,10 @@ public class Order
     public User? Driver { get; set; }
 
     public int DeliveredQuantity { get; set; } // Quantity actually delivered by the driver
+
+    // Delivery Address (for route optimization)
+    public int? DeliveryAddressId { get; set; }
+    public double? DeliveryLat { get; set; }
+    public double? DeliveryLng { get; set; }
+    public string? DeliveryAddress { get; set; }
 }

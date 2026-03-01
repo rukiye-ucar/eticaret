@@ -1,0 +1,11 @@
+﻿  Geri y├╝klenecek projeler belirleniyor...
+  Geri y├╝kleme i├ğin t├╝m projeler g├╝ncel.
+C:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\OrdersController.cs(16,11): error CS8956: Dosya kapsaml─▒ ad alan─▒ bir dosyadaki di─şer t├╝m ├╝yelerin ├Ân├╝nde olmal─▒d─▒r. [C:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+
+Olu┼şturma BA┼ŞARISIZ OLDU.
+
+C:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\OrdersController.cs(16,11): error CS8956: Dosya kapsaml─▒ ad alan─▒ bir dosyadaki di─şer t├╝m ├╝yelerin ├Ân├╝nde olmal─▒d─▒r. [C:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+    0 Uyar─▒
+    1 Hata
+
+Ge├ğen S├╝re 00:00:01.61

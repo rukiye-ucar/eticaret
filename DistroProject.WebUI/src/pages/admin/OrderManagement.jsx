@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Table, Button, Modal, Select, message, Tag, Typography } from 'antd';
+import { Button, Modal, Select, message, Tag, Typography } from 'antd';
 import { CarOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -53,7 +53,6 @@ const OrderManagement = () => {
         fetchDrivers();
     }, []);
 
-    // Group orders by customerId
     const groupedOrders = useMemo(() => {
         const groups = {};
         orders.forEach(order => {
@@ -61,7 +60,7 @@ const OrderManagement = () => {
             if (!groups[cid]) {
                 groups[cid] = {
                     customerId: cid,
-                    customerName: order.customer?.name || order.customer?.email || `Müşteri #${cid}`,
+                    customerName: order.customer?.name || order.customer?.email || `Customer #${cid}`,
                     orders: [],
                     totalPrice: 0,
                     date: order.orderDate,
@@ -76,179 +75,142 @@ const OrderManagement = () => {
     const handleAssignClick = (group) => {
         setSelectedGroup(group);
         setAssignModalVisible(true);
-        setSelectedDriver(null);
+        const existingDriverId = group.orders[0]?.driverId || null;
+        setSelectedDriver(existingDriverId);
     };
 
     const handleAssignSubmit = async () => {
         if (!selectedDriver) {
-            message.warning('Lütfen bir şoför seçin!');
+            message.warning('Please select a driver!');
             return;
         }
-
         const orderIds = selectedGroup.orders.map(o => o.id);
-
         try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/assign-driver-bulk?driverId=${selectedDriver}`, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderIds)
             });
-
             if (response.ok) {
-                message.success(`${orderIds.length} sipariş şoföre atandı!`);
+                message.success(`${orderIds.length} orders assigned to driver!`);
                 setAssignModalVisible(false);
                 fetchOrders();
             } else {
-                message.error('Şoför atama başarısız');
+                message.error('Failed to assign driver');
             }
         } catch (error) {
-            console.error('Error assigning driver:', error);
-            message.error('Bir hata oluştu');
+            message.error('An error occurred');
         }
     };
 
     const getGroupStatus = (groupOrders) => {
         const statuses = [...new Set(groupOrders.map(o => o.status))];
-        if (statuses.length === 1) return statuses[0];
-        return 'Mixed';
+        return statuses.length === 1 ? statuses[0] : 'Mixed';
     };
 
-    const statusColorMap = {
-        Pending: 'orange',
-        Shipped: 'blue',
-        Delivered: 'green',
-        PartialDelivered: 'purple',
-        Mixed: 'default',
-    };
-
-    const columns = [
-        {
-            title: 'Müşteri',
-            dataIndex: 'customerName',
-            key: 'customerName',
-            width: 140,
-            render: (name, record) => (
-                <div>
-                    <div style={{ fontWeight: 600, color: '#f9b17a' }}>{name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#8a8fb0' }}>ID: {record.customerId}</div>
-                </div>
-            ),
-        },
-        {
-            title: 'Ürünler',
-            key: 'products',
-            width: 380,
-            render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {record.orders.map(order => (
-                        <div key={order.id} style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            background: 'rgba(255,255,255,0.05)',
-                            borderRadius: 8,
-                            padding: '6px 12px',
-                            borderLeft: '3px solid #f9b17a',
-                        }}>
-                            <span style={{ flex: 1, fontWeight: 500 }}>{order.product?.name || `Ürün #${order.productId}`}</span>
-                            <span style={{ color: '#aab8d0', margin: '0 12px', whiteSpace: 'nowrap' }}>x{order.quantity}</span>
-                            <span style={{ color: '#f9b17a', fontWeight: 600, whiteSpace: 'nowrap' }}>${order.totalPrice}</span>
-                        </div>
-                    ))}
-                </div>
-            ),
-        },
-        {
-            title: 'Toplam',
-            key: 'totalPrice',
-            width: 100,
-            render: (_, record) => (
-                <span style={{ fontWeight: 700, color: '#f9b17a', fontSize: '1.05rem' }}>
-                    ${record.totalPrice}
-                </span>
-            ),
-        },
-        {
-            title: 'Tarih',
-            dataIndex: 'date',
-            key: 'date',
-            width: 110,
-            render: (date) => new Date(date).toLocaleDateString('tr-TR'),
-        },
-        {
-            title: 'Durum',
-            key: 'status',
-            width: 110,
-            render: (_, record) => {
-                const status = getGroupStatus(record.orders);
-                return (
-                    <Tag color={statusColorMap[status] || 'default'}>
-                        {status.toUpperCase()}
-                    </Tag>
-                );
-            },
-        },
-        {
-            title: 'İşlem',
-            key: 'action',
-            width: 150,
-            render: (_, record) => {
-                const allPending = record.orders.every(o => o.status === 'Pending');
-                return allPending ? (
-                    <Button
-                        type="primary"
-                        icon={<CarOutlined />}
-                        onClick={() => handleAssignClick(record)}
-                    >
-                        Şoför Ata
-                    </Button>
-                ) : null;
-            },
-        },
-    ];
+    const statusColorMap = { Pending: 'orange', Shipped: 'blue', Delivered: 'green', PartialDelivered: 'purple', Mixed: 'default' };
 
     return (
         <div>
-            <Title level={2}>Sipariş Yönetimi (Tüm Siparişler)</Title>
-            <Table
-                columns={columns}
-                dataSource={groupedOrders}
-                rowKey="customerId"
-                loading={loading}
-            />
+            <Title level={2}>Order Management</Title>
+
+            {loading ? (
+                <div style={{ textAlign: 'center', padding: 40 }}>Loading...</div>
+            ) : groupedOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>No orders found.</div>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    {groupedOrders.map(group => {
+                        const status = getGroupStatus(group.orders);
+                        const driver = group.orders[0]?.driver;
+                        const hasDriver = !!driver;
+                        return (
+                            <div key={group.customerId} style={{
+                                background: '#f9f9f9',
+                                borderRadius: 12,
+                                border: '1px solid #e8e8e8',
+                                padding: '16px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                            }}>
+                                {/* Header row */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+                                    <div>
+                                        <div style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>{group.customerName}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#888' }}>Customer ID: {group.customerId}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <Tag color={statusColorMap[status] || 'default'}>{status.toUpperCase()}</Tag>
+                                        <span style={{ fontWeight: 700, color: '#d97b3a' }}>${group.totalPrice.toFixed(2)}</span>
+                                        <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{new Date(group.date).toLocaleDateString('en-US')}</span>
+                                    </div>
+                                </div>
+
+                                {/* Orders */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+                                    {group.orders.map(order => (
+                                        <div key={order.id} style={{
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                            background: 'rgba(249,177,122,0.08)', borderRadius: 8, padding: '6px 12px',
+                                            borderLeft: '3px solid #f9b17a', flexWrap: 'wrap', gap: 4
+                                        }}>
+                                            <span style={{ fontWeight: 500, flex: 1, minWidth: 100 }}>{order.product?.name || `Product #${order.productId}`}</span>
+                                            <span style={{ color: '#aaa', marginRight: 8 }}>x{order.quantity}</span>
+                                            <span style={{ color: '#d97b3a', fontWeight: 600 }}>${order.totalPrice}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Driver + Action */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                                    {hasDriver ? (
+                                        <Tag color="blue" icon={<CarOutlined />}>{driver.name || driver.email}</Tag>
+                                    ) : (
+                                        <Tag color="default">No Driver Assigned</Tag>
+                                    )}
+                                    <Button
+                                        type={hasDriver ? 'default' : 'primary'}
+                                        icon={<CarOutlined />}
+                                        onClick={() => handleAssignClick(group)}
+                                        style={hasDriver ? { borderColor: '#4a9eff', color: '#4a9eff' } : {}}
+                                    >
+                                        {hasDriver ? 'Change Driver' : 'Assign Driver'}
+                                    </Button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
 
             <Modal
-                title="Şoför Ata"
+                title={selectedGroup?.orders?.[0]?.driver ? '🔄 Change Driver' : '🚚 Assign Driver'}
                 open={assignModalVisible}
                 onOk={handleAssignSubmit}
                 onCancel={() => setAssignModalVisible(false)}
+                okText="Assign"
+                cancelText="Cancel"
             >
+                {selectedGroup?.orders?.[0]?.driver && (
+                    <div style={{ marginBottom: 12, padding: '8px 12px', background: 'rgba(74,158,255,0.08)', border: '1px solid rgba(74,158,255,0.25)', borderRadius: 8, fontSize: '0.85rem', color: '#4a9eff' }}>
+                        <CarOutlined style={{ marginRight: 6 }} />
+                        Current driver: <strong>{selectedGroup.orders[0].driver.name || selectedGroup.orders[0].driver.email}</strong>
+                    </div>
+                )}
                 <p>
-                    <strong>{selectedGroup?.customerName}</strong> müşterisinin{' '}
-                    <strong>{selectedGroup?.orders?.length}</strong> siparişi şoföre atanacak:
+                    Assigning <strong>{selectedGroup?.orders?.length}</strong> order(s) for customer{' '}
+                    <strong>{selectedGroup?.customerName}</strong> to a driver:
                 </p>
                 <div style={{ marginBottom: 16 }}>
                     {selectedGroup?.orders?.map(order => (
-                        <div key={order.id} style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            padding: '4px 8px',
-                            background: 'rgba(255,255,255,0.05)',
-                            borderRadius: 6,
-                            marginBottom: 4,
-                        }}>
+                        <div key={order.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px', background: 'rgba(0,0,0,0.03)', borderRadius: 6, marginBottom: 4 }}>
                             <span>{order.product?.name}</span>
-                            <span style={{ color: '#f9b17a' }}>x{order.quantity} — ${order.totalPrice}</span>
+                            <span style={{ color: '#d97b3a' }}>x{order.quantity} — ${order.totalPrice}</span>
                         </div>
                     ))}
                 </div>
-
                 <Select
                     style={{ width: '100%' }}
-                    placeholder="Şoför seçin"
+                    placeholder="Select a driver"
                     onChange={(value) => setSelectedDriver(value)}
                     value={selectedDriver}
                 >

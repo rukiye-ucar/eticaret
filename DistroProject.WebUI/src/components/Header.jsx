@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Layout, Typography, Flex, Button, Badge } from 'antd';
+import { Layout, Typography, Flex, Button, Badge, Drawer } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCartOutlined, SearchOutlined, DashboardOutlined, CarOutlined, LogoutOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, SearchOutlined, DashboardOutlined, CarOutlined, LogoutOutlined, LoginOutlined, UserOutlined, MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import logo from '../assets/with-back.png';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -14,6 +14,9 @@ const Header = () => {
     const navigate = useNavigate();
     const { user, logout, isAuthenticated } = useAuth();
     const { cartItemCount } = useCart();
+
+    // Mobile menu state
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Search state
     const [searchText, setSearchText] = useState('');
@@ -71,90 +74,91 @@ const Header = () => {
     const handleSelectProduct = (product) => {
         setSearchText('');
         setShowDropdown(false);
+        setMobileMenuOpen(false);
         navigate(`/products/${product.id}`);
     };
 
     const handleLogout = () => {
         logout();
+        setMobileMenuOpen(false);
         navigate('/');
     };
 
+    const navLinks = (
+        <>
+            <Button type="link" onClick={() => { navigate('/'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Home</Button>
+            <Button type="link" onClick={() => { navigate('/products'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Products</Button>
+            <Button type="link" style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>About Us</Button>
+
+            {/* Role Based Links */}
+            {isAuthenticated && user?.role === 'Admin' && (
+                <Button
+                    type="link"
+                    icon={<DashboardOutlined />}
+                    onClick={() => { navigate('/admin/orders'); setMobileMenuOpen(false); }}
+                    style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
+                >
+                    Admin Panel
+                </Button>
+            )}
+
+            {isAuthenticated && user?.role === 'Driver' && (
+                <Button
+                    type="link"
+                    icon={<CarOutlined />}
+                    onClick={() => { navigate('/driver'); setMobileMenuOpen(false); }}
+                    style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
+                >
+                    Driver Panel
+                </Button>
+            )}
+
+            {isAuthenticated && user?.role === 'Customer' && (
+                <Button
+                    type="link"
+                    icon={<UserOutlined />}
+                    onClick={() => { navigate('/account'); setMobileMenuOpen(false); }}
+                    style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
+                >
+                    My Account
+                </Button>
+            )}
+
+            {isAuthenticated ? (
+                <Button
+                    type="link"
+                    icon={<LogoutOutlined />}
+                    onClick={handleLogout}
+                    style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                >
+                    Log Out
+                </Button>
+            ) : (
+                <Button
+                    type="link"
+                    icon={<LoginOutlined />}
+                    onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
+                    style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                >
+                    Login / Register
+                </Button>
+            )}
+        </>
+    );
+
     return (
-        <AntHeader style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: 'transparent',
-            padding: '0 24px',
-            marginBottom: '24px',
-        }}>
+        <AntHeader className="app-header">
             {/* Left: Logo and Brand */}
             <Flex align="center" gap="small" style={{ cursor: 'pointer', flex: 1 }} onClick={() => navigate('/')}>
                 <img src={logo} alt="Albatros Logo" style={{ height: '40px', width: '40px', borderRadius: '50%' }} />
-                <Title level={3} style={{ margin: 0, color: '#fff', lineHeight: '1' }}>
+                <Title level={3} style={{ margin: 0, color: '#fff', lineHeight: '1' }} className="brand-title">
                     ALBATROS
                 </Title>
             </Flex>
 
-            {/* Center: Navigation */}
-            <Flex align="center" gap="small" style={{ flex: 1, justifyContent: 'center' }}>
-                <Button type="link" onClick={() => navigate('/')} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Home</Button>
-                <Button type="link" onClick={() => navigate('/products')} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Products</Button>
-                <Button type="link" style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>About Us</Button>
-
-                {/* Role Based Links */}
-                {isAuthenticated && user?.role === 'Admin' && (
-                    <Button
-                        type="link"
-                        icon={<DashboardOutlined />}
-                        onClick={() => navigate('/admin/orders')}
-                        style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
-                    >
-                        Admin Panel
-                    </Button>
-                )}
-
-                {isAuthenticated && user?.role === 'Driver' && (
-                    <Button
-                        type="link"
-                        icon={<CarOutlined />}
-                        onClick={() => navigate('/driver')}
-                        style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
-                    >
-                        Driver Panel
-                    </Button>
-                )}
-
-                {isAuthenticated && user?.role === 'Customer' && (
-                    <Button
-                        type="link"
-                        icon={<UserOutlined />}
-                        onClick={() => navigate('/account')}
-                        style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
-                    >
-                        Hesabım
-                    </Button>
-                )}
-
-                {isAuthenticated ? (
-                    <Button
-                        type="link"
-                        icon={<LogoutOutlined />}
-                        onClick={handleLogout}
-                        style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
-                    >
-                        Log Out
-                    </Button>
-                ) : (
-                    <Button
-                        type="link"
-                        icon={<LoginOutlined />}
-                        onClick={() => navigate('/login')}
-                        style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
-                    >
-                        Login / Register
-                    </Button>
-                )}
+            {/* Center: Desktop Navigation */}
+            <Flex align="center" gap="small" className="desktop-nav">
+                {navLinks}
             </Flex>
 
             {/* Right: Cart and Search */}
@@ -163,13 +167,13 @@ const Header = () => {
                     <Button type="text" onClick={() => navigate('/cart')} icon={<ShoppingCartOutlined style={{ fontSize: '20px', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }} />} />
                 </Badge>
 
-                {/* Search Autocomplete */}
-                <div ref={searchRef} style={{ position: 'relative' }}>
+                {/* Search Autocomplete - hidden on mobile */}
+                <div ref={searchRef} style={{ position: 'relative' }} className="search-container">
                     <div className="search-input-wrapper">
                         <SearchOutlined className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Ürün ara..."
+                            placeholder="Search products..."
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             onFocus={() => searchText.length >= 2 && setShowDropdown(true)}
@@ -198,12 +202,85 @@ const Header = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div className="search-no-result">Sonuç bulunamadı</div>
+                                <div className="search-no-result">No results found</div>
                             )}
                         </div>
                     )}
                 </div>
+
+                {/* Mobile Menu Button */}
+                <Button
+                    type="text"
+                    className="mobile-menu-btn"
+                    icon={<MenuOutlined style={{ fontSize: '20px', color: '#fff' }} />}
+                    onClick={() => setMobileMenuOpen(true)}
+                />
             </Flex>
+
+            {/* Mobile Drawer */}
+            <Drawer
+                title={
+                    <Flex align="center" gap="small">
+                        <img src={logo} alt="Albatros Logo" style={{ height: '32px', width: '32px', borderRadius: '50%' }} />
+                        <span style={{ color: '#fff', fontWeight: 'bold' }}>ALBATROS</span>
+                    </Flex>
+                }
+                placement="right"
+                onClose={() => setMobileMenuOpen(false)}
+                open={mobileMenuOpen}
+                size="default"
+                styles={{
+                    header: { background: '#1a1040', borderBottom: '1px solid rgba(255,255,255,0.1)' },
+                    body: { background: '#1a1040', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' },
+                    mask: { backdropFilter: 'blur(4px)' }
+                }}
+                closeIcon={<CloseOutlined style={{ color: '#fff' }} />}
+            >
+                {/* Mobile Search */}
+                <div ref={null} style={{ position: 'relative', marginBottom: '16px' }}>
+                    <div className="search-input-wrapper">
+                        <SearchOutlined className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className="header-search-input"
+                            style={{ width: '100%' }}
+                        />
+                    </div>
+                    {showDropdown && (
+                        <div className="search-dropdown" style={{ position: 'static', width: '100%', marginTop: '8px', boxSizing: 'border-box' }}>
+                            {searchResults.length > 0 ? (
+                                searchResults.map(product => (
+                                    <div
+                                        key={product.id}
+                                        className="search-dropdown-item"
+                                        onClick={() => handleSelectProduct(product)}
+                                    >
+                                        <img
+                                            src={getImageUrl(product.image, product.imageContentType)}
+                                            alt={product.name}
+                                            className="search-item-image"
+                                        />
+                                        <div className="search-item-info">
+                                            <span className="search-item-name">{product.name}</span>
+                                            <span className="search-item-price">${product.price}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="search-no-result">No results found</div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Mobile Nav Links */}
+                <Flex vertical gap={4}>
+                    {navLinks}
+                </Flex>
+            </Drawer>
         </AntHeader>
     );
 };

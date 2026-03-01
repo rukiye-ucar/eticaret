@@ -185,7 +185,239 @@
     color: #f9b17a;
 }
 
-/* Responsive */
+/* ===== Tab Labels ===== */
+.dp-tab-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.driver-panel .ant-tabs-tab {
+    color: #4a3d7a !important;
+}
+
+.driver-panel .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #d97b3a !important;
+}
+
+.driver-panel .ant-tabs-ink-bar {
+    background: #d97b3a !important;
+}
+
+.driver-panel .ant-tabs-tab:hover {
+    color: #d97b3a !important;
+}
+
+.dp-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1890ff;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 1px 7px;
+    min-width: 20px;
+    height: 18px;
+    line-height: 1;
+}
+
+.dp-tab-badge-green {
+    background: #52c41a;
+}
+
+/* ===== Delivery Card List ===== */
+.dp-card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 4px 0;
+}
+
+/* ─── Pending Delivery Card ─── */
+.dp-delivery-card {
+    background: linear-gradient(135deg, #2d2250 0%, #3a2f6e 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(249, 177, 122, 0.18);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dp-delivery-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.dp-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dp-order-id {
+    font-weight: 800;
+    color: #f9b17a;
+    font-size: 1rem;
+}
+
+.dp-card-customer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.dp-customer-label {
+    font-weight: 700;
+    color: #a78bfa;
+    font-size: 0.9rem;
+}
+
+.dp-card-product {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dp-product-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid rgba(249, 177, 122, 0.3);
+    flex-shrink: 0;
+}
+
+.dp-product-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.dp-card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dp-meta-item {
+    flex: 1;
+    min-width: 70px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dp-meta-label {
+    font-size: 0.7rem;
+    color: #8a8fb0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dp-meta-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.dp-meta-value.price {
+    color: #f9b17a;
+}
+
+/* ─── Delivered Card (grouped by customer) ─── */
+.dp-delivered-card {
+    background: linear-gradient(135deg, #1a2940 0%, #1e3350 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(82, 196, 26, 0.2);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dp-delivered-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.dp-delivered-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(82, 196, 26, 0.08);
+    border-bottom: 1px solid rgba(82, 196, 26, 0.15);
+}
+
+.dp-customer-name {
+    font-weight: 700;
+    color: #52c41a;
+    font-size: 0.95rem;
+}
+
+.dp-customer-total {
+    font-weight: 800;
+    color: #f9b17a;
+    font-size: 1rem;
+}
+
+.dp-delivered-orders {
+    display: flex;
+    flex-direction: column;
+}
+
+.dp-delivered-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dp-delivered-row:last-child {
+    border-bottom: none;
+}
+
+.dp-dr-name {
+    font-weight: 500;
+    color: #fff;
+    flex: 1;
+    min-width: 100px;
+    font-size: 0.88rem;
+}
+
+.dp-dr-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dp-dr-qty {
+    color: #8a8fb0;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.dp-dr-price {
+    color: #f9b17a;
+    font-weight: 600;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
     .driver-stats {
         flex-direction: column;
@@ -194,4 +426,188 @@
     .driver-stat-card {
         min-width: unset;
     }
+
+    .dp-card-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Route Map Tab ===== */
+.route-tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.route-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.08), rgba(74, 158, 255, 0.03));
+    border: 1px solid rgba(74, 158, 255, 0.25);
+    border-radius: 16px;
+    padding: 16px 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.route-controls-left {
+    flex: 1;
+}
+
+.route-info-text {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.route-info-text strong {
+    display: block;
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.route-info-text p {
+    color: #8a8fb0;
+    font-size: 0.82rem;
+    margin: 0;
+}
+
+.route-optimize-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #4a9eff, #1a6ecc);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(74, 158, 255, 0.3);
+    white-space: nowrap;
+}
+
+.route-optimize-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(74, 158, 255, 0.45);
+}
+
+.route-optimize-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Stops List */
+.route-stops-list {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+}
+
+.route-stops-header {
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #f9b17a;
+    background: rgba(249, 177, 122, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    letter-spacing: 0.3px;
+}
+
+.route-stop-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s;
+}
+
+.route-stop-item:last-child {
+    border-bottom: none;
+}
+
+.route-stop-item:hover {
+    background: rgba(74, 158, 255, 0.05);
+}
+
+.route-stop-seq {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a9eff, #1a6ecc);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(74, 158, 255, 0.4);
+}
+
+.route-stop-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.route-stop-customer {
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.88rem;
+}
+
+.route-stop-address {
+    font-size: 0.78rem;
+    color: #8a8fb0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.route-stop-product {
+    font-size: 0.78rem;
+    color: #aab8d0;
+}
+
+.route-stop-price {
+    font-weight: 700;
+    color: #f9b17a;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Placeholder */
+.route-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 2px dashed rgba(74, 158, 255, 0.15);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.route-placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.route-placeholder-hint {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    margin-top: 6px;
 }

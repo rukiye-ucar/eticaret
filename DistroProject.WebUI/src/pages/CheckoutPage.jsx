@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { LockOutlined, CreditCardOutlined, ShoppingOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { LockOutlined, CreditCardOutlined, ShoppingOutlined, ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import axiosInstance from '../api/axiosInstance';
+import AddressMapPicker from '../components/AddressMapPicker';
 import './CheckoutPage.css';
 
 const CheckoutPage = () => {
@@ -12,6 +13,8 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [payLaterLoading, setPayLaterLoading] = useState(false);
+    const [deliveryInfo, setDeliveryInfo] = useState(null); // { lat, lng, address }
+    const [showMap, setShowMap] = useState(false);
 
     const [cardNumber, setCardNumber] = useState('');
     const [cardHolder, setCardHolder] = useState('');
@@ -64,7 +67,12 @@ const CheckoutPage = () => {
         if (!isFormValid) return;
         setLoading(true);
         try {
-            await axiosInstance.post('/Orders/checkout');
+            await axiosInstance.post('/Orders/checkout', {
+                deliveryLat: deliveryInfo?.lat || null,
+                deliveryLng: deliveryInfo?.lng || null,
+                deliveryAddress: deliveryInfo?.address || null,
+            });
+            await clearCart(); // Clear frontend cart state
             setLoading(false);
             navigate('/order-confirmation');
         } catch (error) {
@@ -77,7 +85,12 @@ const CheckoutPage = () => {
     const handlePayLater = async () => {
         setPayLaterLoading(true);
         try {
-            await axiosInstance.post('/Orders/checkout-pay-later');
+            await axiosInstance.post('/Orders/checkout-pay-later', {
+                deliveryLat: deliveryInfo?.lat || null,
+                deliveryLng: deliveryInfo?.lng || null,
+                deliveryAddress: deliveryInfo?.address || null,
+            });
+            await clearCart(); // Clear frontend cart state
             await refreshUser();
             setPayLaterLoading(false);
             navigate('/order-confirmation');
@@ -152,6 +165,41 @@ const CheckoutPage = () => {
                         )}
                     </div>
                 )}
+
+                {/* Delivery Address Section */}
+                <div className="checkout-address-section">
+                    <div className="checkout-address-header" onClick={() => setShowMap(!showMap)}>
+                        <div className="checkout-address-title">
+                            <EnvironmentOutlined style={{ color: '#f9b17a', fontSize: '1.1rem' }} />
+                            <span>Teslimat Adresi</span>
+                            {deliveryInfo && <span className="address-badge">✓ Seçildi</span>}
+                        </div>
+                        <span className="checkout-address-toggle">{showMap ? '▲' : '▼'} {showMap ? 'Gizle' : 'Haritayı Aç'}</span>
+                    </div>
+
+                    {deliveryInfo && !showMap && (
+                        <div className="checkout-address-preview">
+                            📍 {deliveryInfo.address}
+                        </div>
+                    )}
+
+                    {showMap && (
+                        <div className="checkout-map-wrapper">
+                            <AddressMapPicker
+                                onAddressSelect={(info) => {
+                                    setDeliveryInfo(info);
+                                }}
+                                initialLat={deliveryInfo?.lat}
+                                initialLng={deliveryInfo?.lng}
+                                initialAddress={deliveryInfo?.address}
+                            />
+                        </div>
+                    )}
+
+                    {!deliveryInfo && !showMap && (
+                        <p className="checkout-address-hint">Teslimat adresi seçmek için haritayı açın (isteğe bağlı).</p>
+                    )}
+                </div>
             </div>
 
             {/* Payment Form */}

@@ -1,324 +1,293 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
-
-/* 
-Color Palette:
-- Primary (Orange): #f9b17a
-- Dark Background: #2d2250
-- Steel Blue: #576f9d
-- White: #ffffff
-*/
-
-.auth-body {
-    background: #576f9d;
-    /* Fallback */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-family: 'Montserrat', sans-serif;
-    height: 100vh;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-.auth-body * {
-    box-sizing: border-box;
-}
-
-.auth-container {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-        0 10px 10px rgba(0, 0, 0, 0.22);
-    position: relative;
-    overflow: hidden;
-    width: 768px;
-    max-width: 100%;
-    min-height: 480px;
-}
-
-.auth-form-container {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    transition: all 0.6s ease-in-out;
-}
-
-.sign-in-container {
-    left: 0;
-    width: 50%;
-    z-index: 2;
-    opacity: 1;
-    transition: all 0.6s ease-in-out;
-}
-
-.auth-container.right-panel-active .sign-in-container {
-    transform: translateX(100%);
-    opacity: 0;
-    /* Fade out when moving to right */
-    z-index: 1;
-}
-
-.sign-up-container {
-    left: 0;
-    width: 50%;
-    opacity: 0;
-    z-index: 1;
-    transition: all 0.6s ease-in-out;
-}
-
-.auth-container.right-panel-active .sign-up-container {
-    transform: translateX(100%);
-    opacity: 1;
-    z-index: 5;
-    animation: show 0.6s;
-}
-
-@keyframes show {
-
-    0%,
-    49.99% {
-        opacity: 0;
-        z-index: 1;
-    }
-
-    50%,
-    100% {
-        opacity: 1;
-        z-index: 5;
-    }
-}
-
-.overlay-container {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-    transition: transform 0.6s ease-in-out;
-    z-index: 100;
-}
-
-.auth-container.right-panel-active .overlay-container {
-    transform: translateX(-100%);
-}
-
-.overlay {
-    background: #2d2250;
-    /* Dark background fallback */
-    background-repeat: no-repeat;
+/* Full-page wrapper owns the background */
+.auth-layout-bg {
+    min-height: 100vh;
     background-size: cover;
-    background-position: 0 0;
-    color: #ffffff;
+    background-position: center;
+    background-repeat: no-repeat;
     position: relative;
-    left: -100%;
-    height: 100%;
-    width: 200%;
-    transform: translateX(0);
-    transition: transform 0.6s ease-in-out;
-}
-
-.auth-container.right-panel-active .overlay {
-    transform: translateX(50%);
-}
-
-.overlay-panel {
-    position: absolute;
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
-    padding: 0 40px;
-    text-align: center;
-    top: 0;
-    height: 100%;
-    width: 50%;
-    transform: translateX(0);
-    transition: transform 0.6s ease-in-out;
 }
 
-.overlay-panel h1,
-.overlay-panel h2,
-.overlay-panel p,
-.overlay-panel .ant-typography {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
-}
-
-/* 
-   FIX: Removed complex parallax transforms (-20%/20%) to prevent text "shifting" issues.
-   Now they just obey the parent container's slide.
-*/
-.overlay-left {
-    transform: translateX(0);
-    /* Reset to 0 */
-}
-
-.auth-container.right-panel-active .overlay-left {
-    transform: translateX(0);
-}
-
-.overlay-right {
-    right: 0;
-    transform: translateX(0);
-}
-
-.auth-container.right-panel-active .overlay-right {
-    transform: translateX(0);
-    /* Reset to 0 */
-}
-
-.social-container {
-    margin: 20px 0;
-}
-
-.social-container a {
-    border: 1px solid #DDDDDD;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 5px;
-    height: 40px;
-    width: 40px;
-}
-
-/* Form Styles Override */
-.auth-form {
-    background-color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 0 50px;
-    height: 100%;
-    text-align: center;
-    color: #2d2250;
-    /* Dark text for form */
-}
-
-.auth-title {
-    font-weight: bold;
-    margin: 0;
-    margin-bottom: 20px;
-    color: #2d2250 !important;
-    /* Enforce dark text */
-}
-
-/* Inputs styling */
-/* Inputs styling */
-/* Inputs styling */
-.auth-form input {
-    background-color: #2d2250 !important;
-    /* Dark Background */
-    border: none !important;
-    /* Remove Border */
-    padding: 12px 15px;
-    margin: 8px 0;
-    width: 100%;
-    color: #f9b17a !important;
-    /* Orange Text */
-    caret-color: #f9b17a;
-}
-
-/* Fix Placeholder Visibility */
-.auth-form input::placeholder {
-    color: #cccccc !important;
-    /* Light Gray for visibility on Dark BG */
-    opacity: 0.8;
-}
-
-/* Fix Ant Design Input Placeholder if used via className */
-.auth-form .ant-input::placeholder {
-    color: #cccccc !important;
-}
-
-/* Handle Webkit Autofill */
-.auth-form input:-webkit-autofill,
-.auth-form input:-webkit-autofill:hover,
-.auth-form input:-webkit-autofill:focus,
-.auth-form input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #2d2250 inset !important;
-    -webkit-text-fill-color: #f9b17a !important;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-.auth-btn {
-    border-radius: 20px;
-    border: 1px solid #2d2250;
-    /* Midnight Blue Border */
-    background-color: #2d2250;
-    /* Midnight Blue Background */
-    color: #ffffff;
-    /* White Text */
-    font-size: 12px;
-    font-weight: bold;
-    padding: 12px 45px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: transform 80ms ease-in;
-    margin-top: 20px;
-    cursor: pointer;
-}
-
-.auth-btn:active {
-    transform: scale(0.95);
-}
-
-.auth-btn:focus {
-    outline: none;
-}
-
-.auth-btn:hover {
-    background-color: #f9b17a;
-    /* Hover to Orange */
-    border-color: #f9b17a;
-    color: #2d2250;
-}
-
-.ghost {
-    background-color: transparent;
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-.ghost:hover {
-    background-color: #ffffff;
-    color: #2d2250;
-}
-
-/* Ant Design styles overrides */
-.auth-form .ant-input-affix-wrapper {
-    background-color: #2d2250 !important;
-    /* Dark Background */
-    border: none !important;
-    /* Remove Border */
-    border-radius: 8px;
-    padding: 10px;
-}
-
-.auth-form .ant-input-affix-wrapper input {
-    background-color: transparent !important;
-    /* transparent inside wrapper */
-    border: none;
-    padding: 0;
-    margin: 0;
-    color: #f9b17a !important;
-    /* Orange Text */
-}
-
-/* Specific placeholder fix for AntD input inside wrapper */
-.auth-form .ant-input-affix-wrapper input::placeholder {
-    color: #cccccc !important;
-}
-
-/* Icon colors inside input */
-.auth-form .ant-input-affix-wrapper .anticon {
-    color: #f9b17a !important;
-}
-
-.auth-form .ant-input-affix-wrapper:hover,
-.auth-form .ant-input-affix-wrapper:focus-within {
-    border-color: transparent !important;
+/* Make the Header transparent inside auth pages */
+.auth-layout-bg .app-header {
+    background: transparent !important;
     box-shadow: none !important;
+    border-bottom: none !important;
+}
+
+/* ===== Auth card area ===== */
+.auth-page {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px 32px;
+    position: relative;
+}
+
+/* ===== Card — slides up from below ===== */
+.auth-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 24px;
+    padding: 36px 36px 40px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* Slide-up entry animation */
+@keyframes slideUpIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Content fade-swap between modes */
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-card--in {
+    animation: slideUpIn 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.auth-card--out .auth-form-wrap {
+    animation: fadeOut 0.28s ease forwards;
+}
+
+/* ===== Brand / Logo ===== */
+.auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.auth-logo-img {
+    height: 44px;
+    width: 44px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 16px rgba(249, 177, 122, 0.45);
+}
+
+.auth-brand-name {
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #f9b17a, #e8834a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== Tab Switcher ===== */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    background: #f3f0ff;
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 28px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #8a8fb0;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: color 0.25s ease;
+}
+
+.auth-tab.active {
+    color: #fff;
+}
+
+.auth-tab-indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: calc(50% - 4px);
+    background: linear-gradient(135deg, #f9b17a, #e8834a);
+    border-radius: 10px;
+    transition: left 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 4px 14px rgba(249, 177, 122, 0.4);
+}
+
+.auth-tab-indicator.left {
+    left: 4px;
+}
+
+.auth-tab-indicator.right {
+    left: calc(50%);
+}
+
+/* ===== Greeting ===== */
+.auth-greeting {
+    margin-bottom: 20px;
+}
+
+.auth-greeting h2 {
+    margin: 0 0 4px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a1445;
+}
+
+.auth-greeting p {
+    margin: 0;
+    color: #8a8fb0;
+    font-size: 0.88rem;
+}
+
+/* ===== Inputs ===== */
+.auth-input {
+    border-radius: 12px !important;
+    border: 1.5px solid #e8e8f0 !important;
+    background: #fafafe !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.auth-input:focus,
+.auth-input:focus-within {
+    border-color: #f9b17a !important;
+    box-shadow: 0 0 0 3px rgba(249, 177, 122, 0.18) !important;
+}
+
+.auth-input-icon {
+    color: #b0b8d0 !important;
+}
+
+/* Placeholder text visible */
+.auth-card .ant-input::placeholder,
+.auth-card .ant-input-affix-wrapper input::placeholder {
+    color: #b0b8d0 !important;
+    opacity: 1 !important;
+}
+
+.auth-card .ant-input,
+.auth-card .ant-input-affix-wrapper input {
+    color: #1a1445 !important;
+}
+
+/* ===== Submit Button ===== */
+.auth-submit-btn {
+    height: 48px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #f9b17a 0%, #e8834a 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 6px 20px rgba(249, 177, 122, 0.4) !important;
+    transition: all 0.25s ease !important;
+    margin-top: 4px;
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 28px rgba(249, 177, 122, 0.5) !important;
+}
+
+/* ===== Switch link ===== */
+.auth-switch-text {
+    text-align: center;
+    margin-top: 18px;
+    color: #8a8fb0;
+    font-size: 0.88rem;
+}
+
+.auth-switch-text span {
+    color: #e8834a;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ===== Ant Design overrides ===== */
+.auth-card .ant-form-item {
+    margin-bottom: 14px;
+}
+
+.auth-card .ant-form-item-explain-error {
+    font-size: 0.78rem;
+    margin-top: 2px;
+}
+
+/* ===== Mobile ===== */
+@media (min-width: 520px) {
+
+    /* On wider screens, center the card with rounded bottom too */
+    .auth-page {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .auth-card {
+        border-radius: 28px;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    @keyframes slideUpIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+}
+
+@media (max-width: 520px) {
+    .auth-page {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .auth-card {
+        border-radius: 24px 24px 0 0;
+        padding: 28px 20px 44px;
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .auth-greeting h2 {
+        font-size: 1.25rem;
+    }
 }

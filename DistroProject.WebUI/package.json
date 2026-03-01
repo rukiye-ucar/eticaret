@@ -12,6 +12,9 @@
   "dependencies": {
     "antd": "^6.2.3",
     "axios": "^1.13.4",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.2",
+    "leaflet-routing-machine": "^3.2.12",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

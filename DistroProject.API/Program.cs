@@ -23,7 +23,13 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+builder.Services.AddHttpClient(); // For RouteController OSRM calls
 
 // 2. JWT Settings
 var key = Encoding.ASCII.GetBytes("B374A26A71448593AA2744749EF41EE3"); 

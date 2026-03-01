@@ -7,17 +7,18 @@ import Header from './components/Header';
 import AuthPage from './pages/AuthPage';
 import AdminLayout from './layouts/AdminLayout';
 import DriverLayout from './layouts/DriverLayout';
-import ProductManagement from './pages/admin/ProductManagement'; // Import
+import ProductManagement from './pages/admin/ProductManagement';
 import OrderManagement from './pages/admin/OrderManagement';
-import UserManagement from './pages/admin/UserManagement'; // Updated Import
+import UserManagement from './pages/admin/UserManagement';
 import DriverManagement from './pages/admin/DriverManagement';
-import DriverPanel from './pages/driver/DriverPanel'; // Import
+import DriverPanel from './pages/driver/DriverPanel';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmation from './pages/OrderConfirmation';
 import MyAccount from './pages/MyAccount';
+import bgImage from './assets/arkaplan.jpg';
 
 const ConsumerLayout = () => (
   <div className="app-container">
@@ -25,6 +26,16 @@ const ConsumerLayout = () => (
       <Header />
       <Outlet />
     </div>
+  </div>
+);
+
+const AuthLayout = () => (
+  <div
+    className="auth-layout-bg"
+    style={{ backgroundImage: `url(${bgImage})` }}
+  >
+    <Header />
+    <Outlet />
   </div>
 );
 
@@ -37,7 +48,6 @@ function App() {
           colorBgBase: '#2d2250',
           colorTextBase: '#ffffff',
           colorBgContainer: '#576f9d',
-
         },
       }}
     >
@@ -61,9 +71,11 @@ function App() {
                 <Route index element={<DriverPanel />} />
               </Route>
 
-              {/* Auth Route */}
-              <Route path="/login" element={<AuthPage />} />
-              <Route path="/register" element={<AuthPage />} />
+              {/* Auth Routes (with navbar) */}
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="/register" element={<AuthPage />} />
+              </Route>
 
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminLayout />}>

@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Table, Button, Modal, InputNumber, message, Tag, Typography, Empty, Tabs } from 'antd';
-import { CheckCircleOutlined, CarOutlined, InboxOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Button, Modal, InputNumber, App, Tag, Typography, Empty, Tabs, Spin, Alert } from 'antd';
+import { CheckCircleOutlined, CarOutlined, InboxOutlined, HistoryOutlined, CompassOutlined, ReloadOutlined } from '@ant-design/icons';
+import RouteMap from './RouteMap';
 import './DriverPanel.css';
 
 const { Title, Text } = Typography;
 
 const DriverPanel = () => {
+    const { message } = App.useApp();
     const [deliveries, setDeliveries] = useState([]);
     const [deliveredOrders, setDeliveredOrders] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -13,6 +15,12 @@ const DriverPanel = () => {
     const [deliverModalVisible, setDeliverModalVisible] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [deliveredQuantity, setDeliveredQuantity] = useState(1);
+
+    // Route map state
+    const [optimizedRoute, setOptimizedRoute] = useState(null);
+    const [routeLoading, setRouteLoading] = useState(false);
+    const [driverLocation, setDriverLocation] = useState(null);
+    const [locationError, setLocationError] = useState(null);
 
     const token = localStorage.getItem('token');
 
@@ -26,7 +34,7 @@ const DriverPanel = () => {
                 const data = await response.json();
                 setDeliveries(data);
             } else {
-                message.error('Teslimatlar yüklenemedi');
+                message.error('Failed to load deliveries');
             }
         } catch (error) {
             console.error('Error fetching deliveries:', error);
@@ -57,6 +65,50 @@ const DriverPanel = () => {
         fetchDeliveredOrders();
     }, []);
 
+    // --- Route Optimization ---
+    const fetchOptimizedRoute = async (lat, lng) => {
+        setRouteLoading(true);
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_API_BASE_URL}/route/optimize?driverLat=${lat}&driverLng=${lng}`,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+            if (res.ok) {
+                const data = await res.json();
+                setOptimizedRoute(data.optimizedRoute || []);
+                if ((data.optimizedRoute || []).length === 0) {
+                    message.info('No delivery orders with location data found.');
+                }
+            } else {
+                message.error('Failed to calculate route.');
+            }
+        } catch {
+            message.error('Could not reach the server.');
+        } finally {
+            setRouteLoading(false);
+        }
+    };
+
+    const handleGetRoute = () => {
+        setLocationError(null);
+        if (!navigator.geolocation) {
+            setLocationError('Your browser does not support geolocation.');
+            return;
+        }
+        setRouteLoading(true);
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                setDriverLocation({ lat: latitude, lng: longitude });
+                fetchOptimizedRoute(latitude, longitude);
+            },
+            () => {
+                setLocationError('Could not get location. Please check browser permissions.');
+                setRouteLoading(false);
+            }
+        );
+    };
+
     // Group delivered orders by customer
     const groupedDelivered = useMemo(() => {
         const groups = {};
@@ -65,7 +117,7 @@ const DriverPanel = () => {
             if (!groups[cid]) {
                 groups[cid] = {
                     customerId: cid,
-                    customerName: order.customer?.name || order.customer?.email || `Müşteri #${cid}`,
+                    customerName: order.customer?.name || order.customer?.email || `Customer #${cid}`,
                     orders: [],
                     totalPrice: 0,
                 };
@@ -92,11 +144,11 @@ const DriverPanel = () => {
         if (!selectedOrder) return;
 
         if (deliveredQuantity < 1) {
-            message.warning('Teslim edilen miktar en az 1 olmalı!');
+            message.warning('Delivered quantity must be at least 1!');
             return;
         }
         if (deliveredQuantity > selectedOrder.quantity) {
-            message.warning('Sipariş miktarından fazla teslim edemezsiniz!');
+            message.warning('Cannot deliver more than the order quantity!');
             return;
         }
 
@@ -114,172 +166,84 @@ const DriverPanel = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                message.success(result.message || 'Teslimat başarılı!');
+                message.success(result.message || 'Delivery confirmed!');
                 setDeliverModalVisible(false);
                 fetchDeliveries();
                 fetchDeliveredOrders();
             } else {
                 const error = await response.text();
-                message.error(error || 'Teslimat başarısız');
+                message.error(error || 'Delivery failed');
             }
         } catch (error) {
             console.error('Error delivering order:', error);
-            message.error('Bir hata oluştu');
+            message.error('An error occurred');
         }
     };
-
-    // ─── Pending deliveries columns ───
-    const pendingColumns = [
-        {
-            title: 'Sipariş No',
-            dataIndex: 'id',
-            key: 'id',
-            width: 100,
-            render: (id) => <span style={{ fontWeight: 700, color: '#f9b17a' }}>#{id}</span>,
-        },
-        {
-            title: 'Ürün',
-            key: 'product',
-            width: 280,
-            render: (_, record) => (
-                <div className="delivery-product-info">
-                    {record.product?.imageUrl && (
-                        <img src={record.product.imageUrl} alt={record.product?.name} className="product-thumb" />
-                    )}
-                    <span className="product-name">{record.product?.name || `Ürün #${record.productId}`}</span>
-                </div>
-            ),
-        },
-        {
-            title: 'Miktar',
-            dataIndex: 'quantity',
-            key: 'quantity',
-            width: 100,
-            render: (qty) => <span style={{ fontWeight: 600, fontSize: '1rem' }}>x{qty}</span>,
-        },
-        {
-            title: 'Toplam Fiyat',
-            dataIndex: 'totalPrice',
-            key: 'totalPrice',
-            width: 130,
-            render: (price) => <span style={{ fontWeight: 700, color: '#f9b17a', fontSize: '1.05rem' }}>${price}</span>,
-        },
-        {
-            title: 'Sipariş Tarihi',
-            dataIndex: 'orderDate',
-            key: 'orderDate',
-            width: 130,
-            render: (date) => <span style={{ color: '#aab8d0' }}>{new Date(date).toLocaleDateString('tr-TR')}</span>,
-        },
-        {
-            title: 'Durum',
-            dataIndex: 'status',
-            key: 'status',
-            width: 110,
-            render: (status) => <Tag color="blue">{status.toUpperCase()}</Tag>,
-        },
-        {
-            title: 'İşlem',
-            key: 'action',
-            width: 150,
-            render: (_, record) => (
-                <Button className="deliver-btn" icon={<CheckCircleOutlined />} onClick={() => handleDeliverClick(record)}>
-                    Teslim Et
-                </Button>
-            ),
-        },
-    ];
-
-    // ─── Delivered (grouped by customer) columns ───
-    const deliveredColumns = [
-        {
-            title: 'Müşteri',
-            dataIndex: 'customerName',
-            key: 'customerName',
-            width: 180,
-            render: (name, record) => (
-                <div>
-                    <div style={{ fontWeight: 600, color: '#f9b17a', fontSize: '1rem' }}>{name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#8a8fb0' }}>
-                        {record.orders.length} sipariş
-                    </div>
-                </div>
-            ),
-        },
-        {
-            title: 'Teslim Edilen Ürünler',
-            key: 'products',
-            width: 420,
-            render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {record.orders.map(order => (
-                        <div key={order.id} style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            background: 'rgba(255,255,255,0.05)',
-                            borderRadius: 8,
-                            padding: '6px 12px',
-                            borderLeft: `3px solid ${order.status === 'Delivered' ? '#52c41a' : '#722ed1'}`,
-                        }}>
-                            <span style={{ flex: 1, fontWeight: 500 }}>
-                                {order.product?.name || `Ürün #${order.productId}`}
-                            </span>
-                            <span style={{ color: '#aab8d0', margin: '0 8px', whiteSpace: 'nowrap' }}>
-                                x{order.deliveredQuantity}/{order.quantity}
-                            </span>
-                            <span style={{ color: '#f9b17a', fontWeight: 600, whiteSpace: 'nowrap', marginRight: 8 }}>
-                                ${order.totalPrice}
-                            </span>
-                            <Tag color={order.status === 'Delivered' ? 'green' : 'purple'} style={{ margin: 0 }}>
-                                {order.status === 'Delivered' ? 'TAM' : 'KISMİ'}
-                            </Tag>
-                        </div>
-                    ))}
-                </div>
-            ),
-        },
-        {
-            title: 'Toplam',
-            key: 'totalPrice',
-            width: 120,
-            render: (_, record) => (
-                <span style={{ fontWeight: 700, color: '#f9b17a', fontSize: '1.1rem' }}>
-                    ${record.totalPrice.toFixed(2)}
-                </span>
-            ),
-        },
-    ];
 
     const tabItems = [
         {
             key: 'pending',
             label: (
-                <span>
-                    <CarOutlined style={{ marginRight: 8 }} />
-                    Bekleyen Teslimatlar
+                <span className="dp-tab-label">
+                    <CarOutlined />
+                    Pending Deliveries
                     {deliveries.length > 0 && (
-                        <Tag color="blue" style={{ marginLeft: 8 }}>{deliveries.length}</Tag>
+                        <span className="dp-tab-badge">{deliveries.length}</span>
                     )}
                 </span>
             ),
             children: (
                 <div>
-                    {deliveries.length > 0 ? (
-                        <Table
-                            columns={pendingColumns}
-                            dataSource={deliveries}
-                            rowKey="id"
-                            loading={loading}
-                            pagination={{ pageSize: 10 }}
-                        />
+                    {loading ? (
+                        <div className="driver-empty"><Spin size="large" /></div>
+                    ) : deliveries.length === 0 ? (
+                        <div className="driver-empty">
+                            <InboxOutlined />
+                            <p>No deliveries assigned to you yet.</p>
+                        </div>
                     ) : (
-                        !loading && (
-                            <div className="driver-empty">
-                                <InboxOutlined />
-                                <p>Henüz size atanmış teslimat bulunmuyor.</p>
-                            </div>
-                        )
+                        <div className="dp-card-list">
+                            {deliveries.map(order => (
+                                <div key={order.id} className="dp-delivery-card">
+                                    <div className="dp-card-top">
+                                        <span className="dp-order-id">#{order.id}</span>
+                                        <Tag color="blue">{order.status?.toUpperCase()}</Tag>
+                                    </div>
+                                    <div className="dp-card-customer">
+                                        <span className="dp-meta-label">Customer</span>
+                                        <span className="dp-customer-label">{order.customer?.name || order.customer?.email || `Customer #${order.customerId}`}</span>
+                                    </div>
+                                    <div className="dp-card-product">
+                                        {order.product?.imageUrl && (
+                                            <img src={order.product.imageUrl} alt={order.product?.name} className="dp-product-thumb" />
+                                        )}
+                                        <span className="dp-product-name">{order.product?.name || `Product #${order.productId}`}</span>
+                                    </div>
+                                    <div className="dp-card-meta">
+                                        <div className="dp-meta-item">
+                                            <span className="dp-meta-label">Qty</span>
+                                            <span className="dp-meta-value">x{order.quantity}</span>
+                                        </div>
+                                        <div className="dp-meta-item">
+                                            <span className="dp-meta-label">Total</span>
+                                            <span className="dp-meta-value price">${order.totalPrice}</span>
+                                        </div>
+                                        <div className="dp-meta-item">
+                                            <span className="dp-meta-label">Date</span>
+                                            <span className="dp-meta-value">{new Date(order.orderDate).toLocaleDateString('en-US')}</span>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        className="deliver-btn"
+                                        icon={<CheckCircleOutlined />}
+                                        onClick={() => handleDeliverClick(order)}
+                                        block
+                                    >
+                                        Deliver
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
                     )}
                 </div>
             ),
@@ -287,31 +251,131 @@ const DriverPanel = () => {
         {
             key: 'delivered',
             label: (
-                <span>
-                    <HistoryOutlined style={{ marginRight: 8 }} />
-                    Teslim Edilenler
+                <span className="dp-tab-label">
+                    <HistoryOutlined />
+                    Delivered Orders
                     {groupedDelivered.length > 0 && (
-                        <Tag color="green" style={{ marginLeft: 8 }}>{deliveredOrders.length}</Tag>
+                        <span className="dp-tab-badge dp-tab-badge-green">{deliveredOrders.length}</span>
                     )}
                 </span>
             ),
             children: (
                 <div>
-                    {groupedDelivered.length > 0 ? (
-                        <Table
-                            columns={deliveredColumns}
-                            dataSource={groupedDelivered}
-                            rowKey="customerId"
-                            loading={deliveredLoading}
-                            pagination={{ pageSize: 10 }}
-                        />
+                    {deliveredLoading ? (
+                        <div className="driver-empty"><Spin size="large" /></div>
+                    ) : groupedDelivered.length === 0 ? (
+                        <div className="driver-empty">
+                            <InboxOutlined />
+                            <p>No completed deliveries yet.</p>
+                        </div>
                     ) : (
-                        !deliveredLoading && (
-                            <div className="driver-empty">
-                                <InboxOutlined />
-                                <p>Henüz tamamlanmış teslimat bulunmuyor.</p>
+                        <div className="dp-card-list">
+                            {groupedDelivered.map(group => (
+                                <div key={group.customerId} className="dp-delivered-card">
+                                    <div className="dp-delivered-header">
+                                        <span className="dp-customer-name">{group.customerName}</span>
+                                        <span className="dp-customer-total">${group.totalPrice.toFixed(2)}</span>
+                                    </div>
+                                    <div className="dp-delivered-orders">
+                                        {group.orders.map(order => (
+                                            <div key={order.id} className="dp-delivered-row" style={{ borderLeft: `3px solid ${order.status === 'Delivered' ? '#52c41a' : '#722ed1'}` }}>
+                                                <span className="dp-dr-name">{order.product?.name || `Product #${order.productId}`}</span>
+                                                <div className="dp-dr-right">
+                                                    <span className="dp-dr-qty">x{order.deliveredQuantity}/{order.quantity}</span>
+                                                    <span className="dp-dr-price">${order.totalPrice}</span>
+                                                    <Tag color={order.status === 'Delivered' ? 'green' : 'purple'} style={{ margin: 0 }}>
+                                                        {order.status === 'Delivered' ? 'FULL' : 'PARTIAL'}
+                                                    </Tag>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ),
+        },
+        {
+            key: 'route',
+            label: (
+                <span>
+                    <CompassOutlined style={{ marginRight: 8 }} />
+                    Route Map
+                    {optimizedRoute && optimizedRoute.length > 0 && (
+                        <Tag color="geekblue" style={{ marginLeft: 8 }}>{optimizedRoute.length} Stops</Tag>
+                    )}
+                </span>
+            ),
+            children: (
+                <div className="route-tab-content">
+                    {/* Controls */}
+                    <div className="route-controls">
+                        <div className="route-controls-left">
+                            <div className="route-info-text">
+                                <CompassOutlined style={{ color: '#4a9eff', fontSize: '1.2rem' }} />
+                                <div>
+                                    <strong>Optimized Route</strong>
+                                    <p>Generate the shortest delivery route using your location.</p>
+                                </div>
                             </div>
-                        )
+                        </div>
+                        <button
+                            className="route-optimize-btn"
+                            onClick={handleGetRoute}
+                            disabled={routeLoading}
+                        >
+                            {routeLoading ? (
+                                <><Spin size="small" /> Calculating...</>
+                            ) : (
+                                <><ReloadOutlined /> {optimizedRoute ? 'Refresh Route' : '📍 Start Route'}</>
+                            )}
+                        </button>
+                    </div>
+
+                    {locationError && (
+                        <Alert
+                            type="error"
+                            message={locationError}
+                            showIcon
+                            style={{ marginBottom: 16, borderRadius: 10 }}
+                        />
+                    )}
+
+                    {/* Route stops summary */}
+                    {optimizedRoute && optimizedRoute.length > 0 && (
+                        <div className="route-stops-list">
+                            <div className="route-stops-header">📋 Delivery Order</div>
+                            {optimizedRoute.map((stop) => (
+                                <div key={stop.orderId} className="route-stop-item">
+                                    <div className="route-stop-seq">{stop.sequence}</div>
+                                    <div className="route-stop-info">
+                                        <div className="route-stop-customer">👤 {stop.customerName}</div>
+                                        <div className="route-stop-address">📍 {stop.address}</div>
+                                        <div className="route-stop-product">📦 {stop.productName} × {stop.quantity}</div>
+                                    </div>
+                                    <div className="route-stop-price">${stop.totalPrice}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Map */}
+                    {optimizedRoute !== null && driverLocation && (
+                        <RouteMap
+                            optimizedRoute={optimizedRoute}
+                            driverLat={driverLocation.lat}
+                            driverLng={driverLocation.lng}
+                        />
+                    )}
+
+                    {optimizedRoute === null && !routeLoading && (
+                        <div className="route-placeholder">
+                            <div className="route-placeholder-icon">🗺️</div>
+                            <p>Click the button above to view the route.</p>
+                            <p className="route-placeholder-hint">The shortest path based on your location will be calculated.</p>
+                        </div>
                     )}
                 </div>
             ),
@@ -322,8 +386,8 @@ const DriverPanel = () => {
         <div className="driver-panel">
             {/* Header */}
             <div className="driver-header">
-                <Title level={2} style={{ margin: 0 }}>🚚 Teslimatlarım</Title>
-                <Text type="secondary">Size atanan siparişleri buradan görüntüleyebilir ve teslim edebilirsiniz.</Text>
+                <Title level={2} style={{ margin: 0 }}>🚚 My Deliveries</Title>
+                <Text type="secondary">View and confirm orders assigned to you.</Text>
             </div>
 
             {/* Stats */}
@@ -334,7 +398,7 @@ const DriverPanel = () => {
                     </div>
                     <div className="stat-info">
                         <h3>{deliveries.length}</h3>
-                        <span>Bekleyen Teslimat</span>
+                        <span>Pending Deliveries</span>
                     </div>
                 </div>
                 <div className="driver-stat-card">
@@ -343,7 +407,7 @@ const DriverPanel = () => {
                     </div>
                     <div className="stat-info">
                         <h3>{deliveredOrders.length}</h3>
-                        <span>Teslim Edildi</span>
+                        <span>Delivered</span>
                     </div>
                 </div>
                 <div className="driver-stat-card">
@@ -352,7 +416,7 @@ const DriverPanel = () => {
                     </div>
                     <div className="stat-info">
                         <h3>{pendingCustomerCount}</h3>
-                        <span>Kalan Müşteri</span>
+                        <span>Remaining Customers</span>
                     </div>
                 </div>
             </div>
@@ -362,32 +426,32 @@ const DriverPanel = () => {
 
             {/* Deliver Modal */}
             <Modal
-                title="Teslimat Onayla"
+                title="Confirm Delivery"
                 open={deliverModalVisible}
                 onOk={handleDeliverSubmit}
                 onCancel={() => setDeliverModalVisible(false)}
-                okText="Teslim Et"
-                cancelText="İptal"
+                okText="Deliver"
+                cancelText="Cancel"
                 className="deliver-modal"
             >
                 {selectedOrder && (
                     <div>
                         <div className="order-detail-row">
-                            <span className="label">Ürün:</span>
-                            <span className="value">{selectedOrder.product?.name || `Ürün #${selectedOrder.productId}`}</span>
+                            <span className="label">Product:</span>
+                            <span className="value">{selectedOrder.product?.name || `Product #${selectedOrder.productId}`}</span>
                         </div>
                         <div className="order-detail-row">
-                            <span className="label">Sipariş Miktarı:</span>
+                            <span className="label">Order Qty:</span>
                             <span className="value">x{selectedOrder.quantity}</span>
                         </div>
                         <div className="order-detail-row">
-                            <span className="label">Toplam Fiyat:</span>
+                            <span className="label">Total Price:</span>
                             <span className="value">${selectedOrder.totalPrice}</span>
                         </div>
 
                         <div style={{ marginTop: 20 }}>
                             <Text strong style={{ display: 'block', marginBottom: 8 }}>
-                                Teslim Edilen Miktar:
+                                Delivered Quantity:
                             </Text>
                             <InputNumber
                                 min={1}
@@ -399,7 +463,7 @@ const DriverPanel = () => {
                             />
                             {deliveredQuantity < selectedOrder.quantity && (
                                 <Text type="warning" style={{ display: 'block', marginTop: 8, fontSize: '0.85rem' }}>
-                                    ⚠️ Kısmi teslimat yapılacak. {selectedOrder.quantity - deliveredQuantity} adet eksik kalacak.
+                                    ⚠️ Partial delivery. {selectedOrder.quantity - deliveredQuantity} unit(s) will be short.
                                 </Text>
                             )}
                         </div>

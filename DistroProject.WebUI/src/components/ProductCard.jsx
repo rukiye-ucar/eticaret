@@ -1,28 +1,26 @@
 import React from 'react';
-import { Button, Typography, message } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { Button, message } from 'antd';
+import { ShoppingCartOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import '../pages/ProductList.css'; // Ensure styles are imported
-
-const { Text } = Typography;
+import '../pages/ProductList.css';
 
 const ProductCard = ({ product }) => {
     const { isAuthenticated } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
 
-    // Helper to handle base64 images or URLs
     const getImageUrl = (img, contentType) => {
-        if (!img) return 'https://via.placeholder.com/300?text=No+Image'; // Fallback
+        if (!img) return 'https://via.placeholder.com/300?text=No+Image';
         if (img.startsWith('http')) return img;
         return `data:${contentType || 'image/png'};base64,${img}`;
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e) => {
+        e.stopPropagation();
         if (!isAuthenticated) {
-            message.warning('Please log in first!');
+            message.warning('Please log in to add items to your cart.');
             navigate('/login');
             return;
         }
@@ -30,15 +28,22 @@ const ProductCard = ({ product }) => {
         message.success(`${product.name} added to cart!`);
     };
 
+    const handleCardClick = () => {
+        navigate(`/products/${product.id}`);
+    };
+
     return (
-        <div className="product-card">
-            <div className="product-image-container" onClick={() => navigate(`/products/${product.id}`)} style={{ cursor: 'pointer' }}>
+        <div className="product-card" onClick={handleCardClick}>
+            {/* Product Image */}
+            <div className="product-image-container">
                 <img
                     src={getImageUrl(product.image, product.imageContentType)}
                     alt={product.name}
                     className="product-image"
                 />
             </div>
+
+            {/* Product Info */}
             <div className="product-info">
                 <div className="product-meta-row">
                     <div className="product-name" title={product.name}>
@@ -48,8 +53,8 @@ const ProductCard = ({ product }) => {
                         ${product.price}
                     </div>
                 </div>
+
                 <Button
-                    type="primary"
                     icon={<ShoppingCartOutlined />}
                     className="add-to-cart-btn"
                     onClick={handleAddToCart}

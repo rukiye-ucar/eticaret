@@ -78,19 +78,44 @@ body {
   /* Firefox */
 }
 
+/* ===== Header ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  padding: 0 24px;
+  margin-bottom: 24px;
+}
+
+.brand-title {
+  display: block;
+}
+
+/* Desktop nav visible by default */
+.desktop-nav {
+  flex: 1;
+  justify-content: center;
+  display: flex !important;
+}
+
+/* Mobile hamburger hidden by default */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+/* Search container visible by default */
+.search-container {
+  display: block;
+}
+
+/* ===== Category Cards ===== */
 .category-card {
   width: 60%;
-  /* Gradient handled inline for variety, or set base here */
   border-radius: 20px;
   padding: 2px;
-  /* Border width equivalent */
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Create the gradient border effect by using background-origin/clip tricks or nested divs if needed.
-       For simplicity as per prompt "birbirinden ayırmak için gece mavisi border" (night blue border) applied to parent.
-       Here user asked: "gradyan ve etrafına border verilmiş kutucuklar" (gradient and bordered boxes).
-       I'll apply a solid border or a gradient border look.
-    */
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
@@ -239,6 +264,78 @@ code {
   text-align: center;
   color: #8a8fb0;
   font-size: 0.9rem;
+}
+
+/* ===== Responsive Breakpoints ===== */
+
+/* Tablet (≤ 900px) */
+@media (max-width: 900px) {
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex !important;
+  }
+
+  .search-container {
+    display: none;
+  }
+
+  .category-card {
+    width: 85%;
+  }
+
+  .app-header {
+    padding: 0 16px;
+  }
+
+  .brand-title {
+    font-size: 1rem !important;
+  }
+}
+
+/* Mobile (≤ 600px) */
+@media (max-width: 600px) {
+  .app-container {
+    padding: 8px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .content-container {
+    height: auto;
+    min-height: 100vh;
+    border-radius: 20px;
+    border: none;
+  }
+
+  .category-card {
+    width: 95%;
+  }
+
+  .card-content {
+    flex-direction: column !important;
+    align-items: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .card-content .text-section {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    text-align: center;
+    align-items: center !important;
+  }
+
+  .card-content .image-section {
+    width: 120px;
+    height: 80px;
+  }
+
+  .app-header {
+    margin-bottom: 12px;
+  }
 }
 
 /* Fix for Multi-Select Tag Visibility */

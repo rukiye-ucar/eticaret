@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Typography, Spin, Table, Tag, Empty, Collapse } from 'antd';
+import { Typography, Spin, Tag, Empty, Collapse } from 'antd';
 import { CarOutlined, UserOutlined, ShoppingOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import './DriverManagement.css';
 
@@ -11,21 +11,14 @@ const DriverManagement = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
+    useEffect(() => { fetchOrders(); }, []);
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/orders/all`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data);
-            }
+            const res = await fetch(`${API_BASE}/orders/all`, { headers: { Authorization: `Bearer ${token}` } });
+            if (res.ok) setOrders(await res.json());
         } catch (err) {
             console.error('Failed to fetch orders:', err);
         } finally {
@@ -33,61 +26,49 @@ const DriverManagement = () => {
         }
     };
 
-    // Group orders by driver, then by customer
     const driverGroups = useMemo(() => {
-        // Only shipped/delivered orders (has a driver assigned)
         const assigned = orders.filter(o => o.driverId);
         const groups = {};
-
         assigned.forEach(order => {
             const dId = order.driverId;
             if (!groups[dId]) {
                 groups[dId] = {
                     driverId: dId,
-                    driverName: order.driver?.name || order.driver?.email || `Şoför #${dId}`,
+                    driverName: order.driver?.name || order.driver?.email || `Driver #${dId}`,
                     customers: {},
                     totalOrders: 0,
                     deliveredCount: 0,
                     pendingCount: 0,
                 };
             }
-
             const group = groups[dId];
             group.totalOrders++;
-
             if (order.status === 'Delivered' || order.status === 'PartialDelivered') {
                 group.deliveredCount++;
             } else {
                 group.pendingCount++;
             }
-
             const cId = order.customerId;
             if (!group.customers[cId]) {
                 group.customers[cId] = {
                     customerId: cId,
-                    customerName: order.customer?.name || order.customer?.email || `Müşteri #${cId}`,
+                    customerName: order.customer?.name || order.customer?.email || `Customer #${cId}`,
                     orders: [],
                 };
             }
             group.customers[cId].orders.push(order);
         });
-
-        // Convert customers object to array
-        Object.values(groups).forEach(g => {
-            g.customerList = Object.values(g.customers);
-            delete g.customers;
-        });
-
+        Object.values(groups).forEach(g => { g.customerList = Object.values(g.customers); delete g.customers; });
         return Object.values(groups);
     }, [orders]);
 
     const getStatusTag = (status) => {
         const map = {
-            Pending: { color: 'orange', text: 'Bekliyor' },
-            Approved: { color: 'blue', text: 'Onaylandı' },
-            Shipped: { color: 'cyan', text: 'Yolda' },
-            Delivered: { color: 'green', text: 'Teslim Edildi' },
-            PartialDelivered: { color: 'purple', text: 'Kısmi Teslim' },
+            Pending: { color: 'orange', text: 'Pending' },
+            Approved: { color: 'blue', text: 'Approved' },
+            Shipped: { color: 'cyan', text: 'Shipped' },
+            Delivered: { color: 'green', text: 'Delivered' },
+            PartialDelivered: { color: 'purple', text: 'Partial' },
         };
         const info = map[status] || { color: 'default', text: status };
         return <Tag color={info.color}>{info.text}</Tag>;
@@ -99,22 +80,18 @@ const DriverManagement = () => {
         return `data:${contentType || 'image/png'};base64,${img}`;
     };
 
-    if (loading) {
-        return (
-            <div style={{ textAlign: 'center', padding: 60 }}>
-                <Spin size="large" />
-            </div>
-        );
-    }
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: 60 }}><Spin size="large" /></div>
+    );
 
     return (
         <div className="driver-mgmt-page">
             <div className="driver-mgmt-header">
                 <Title level={2} style={{ margin: 0, color: '#fff' }}>
                     <CarOutlined style={{ marginRight: 12, color: '#f9b17a' }} />
-                    Şoför Yönetimi
+                    Driver Management
                 </Title>
-                <Text style={{ color: '#aab8d0' }}>Şoförlerin teslimatlarını müşteri bazında görüntüleyin</Text>
+                <Text style={{ color: '#aab8d0' }}>View driver deliveries grouped by customer</Text>
             </div>
 
             {/* Stats */}
@@ -123,27 +100,27 @@ const DriverManagement = () => {
                     <CarOutlined className="dm-stat-icon" />
                     <div>
                         <h3>{driverGroups.length}</h3>
-                        <span>Aktif Şoför</span>
+                        <span>Active Drivers</span>
                     </div>
                 </div>
                 <div className="dm-stat-card">
                     <ShoppingOutlined className="dm-stat-icon delivered" />
                     <div>
                         <h3>{driverGroups.reduce((s, d) => s + d.totalOrders, 0)}</h3>
-                        <span>Toplam Sipariş</span>
+                        <span>Total Orders</span>
                     </div>
                 </div>
                 <div className="dm-stat-card">
                     <CheckCircleOutlined className="dm-stat-icon success" />
                     <div>
                         <h3>{driverGroups.reduce((s, d) => s + d.deliveredCount, 0)}</h3>
-                        <span>Teslim Edildi</span>
+                        <span>Delivered</span>
                     </div>
                 </div>
             </div>
 
             {driverGroups.length === 0 ? (
-                <Empty description="Henüz şoföre atanmış sipariş yok." />
+                <Empty description="No orders assigned to any driver yet." />
             ) : (
                 <Collapse
                     className="driver-collapse"
@@ -157,10 +134,10 @@ const DriverManagement = () => {
                                     <span className="driver-name">{driver.driverName}</span>
                                 </div>
                                 <div className="driver-badges">
-                                    <Tag color="blue">{driver.totalOrders} sipariş</Tag>
-                                    <Tag color="cyan">{driver.pendingCount} bekliyor</Tag>
-                                    <Tag color="green">{driver.deliveredCount} teslim</Tag>
-                                    <Tag color="orange">{driver.customerList.length} müşteri</Tag>
+                                    <Tag color="blue">{driver.totalOrders} orders</Tag>
+                                    <Tag color="cyan">{driver.pendingCount} pending</Tag>
+                                    <Tag color="green">{driver.deliveredCount} delivered</Tag>
+                                    <Tag color="orange">{driver.customerList.length} customers</Tag>
                                 </div>
                             </div>
                         ),
@@ -171,7 +148,7 @@ const DriverManagement = () => {
                                         <div className="customer-header">
                                             <UserOutlined style={{ color: '#f9b17a' }} />
                                             <span className="customer-name">{customer.customerName}</span>
-                                            <Tag color="geekblue">{customer.orders.length} ürün</Tag>
+                                            <Tag color="geekblue">{customer.orders.length} items</Tag>
                                         </div>
                                         <div className="customer-orders">
                                             {customer.orders.map(order => (
@@ -188,10 +165,10 @@ const DriverManagement = () => {
                                                         )}
                                                         <div className="order-product-info">
                                                             <span className="order-product-name">
-                                                                {order.product?.name || `Ürün #${order.productId}`}
+                                                                {order.product?.name || `Product #${order.productId}`}
                                                             </span>
                                                             <span className="order-product-qty">
-                                                                Adet: {order.deliveredQuantity > 0
+                                                                Qty: {order.deliveredQuantity > 0
                                                                     ? `${order.deliveredQuantity}/${order.quantity}`
                                                                     : order.quantity}
                                                             </span>
