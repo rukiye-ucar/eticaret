@@ -12,6 +12,8 @@
   "dependencies": {
     "antd": "^6.2.3",
     "axios": "^1.13.4",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.2",
     "leaflet-routing-machine": "^3.2.12",

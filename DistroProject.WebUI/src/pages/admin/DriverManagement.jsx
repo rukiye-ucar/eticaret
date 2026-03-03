@@ -59,7 +59,7 @@ const DriverManagement = () => {
             group.customers[cId].orders.push(order);
         });
         Object.values(groups).forEach(g => { g.customerList = Object.values(g.customers); delete g.customers; });
-        return Object.values(groups);
+        return Object.values(groups).sort((a, b) => b.driverId - a.driverId);
     }, [orders]);
 
     const getStatusTag = (status) => {
@@ -87,7 +87,7 @@ const DriverManagement = () => {
     return (
         <div className="driver-mgmt-page">
             <div className="driver-mgmt-header">
-                <Title level={2} style={{ margin: 0, color: '#fff' }}>
+                <Title level={2} style={{ margin: 0, color: '#1a1a2e' }}>
                     <CarOutlined style={{ marginRight: 12, color: '#f9b17a' }} />
                     Driver Management
                 </Title>

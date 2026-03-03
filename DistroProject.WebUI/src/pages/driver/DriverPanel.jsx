@@ -203,7 +203,7 @@ const DriverPanel = () => {
                         </div>
                     ) : (
                         <div className="dp-card-list">
-                            {deliveries.map(order => (
+                            {[...deliveries].sort((a, b) => b.id - a.id).map(order => (
                                 <div key={order.id} className="dp-delivery-card">
                                     <div className="dp-card-top">
                                         <span className="dp-order-id">#{order.id}</span>
@@ -270,7 +270,11 @@ const DriverPanel = () => {
                         </div>
                     ) : (
                         <div className="dp-card-list">
-                            {groupedDelivered.map(group => (
+                            {[...groupedDelivered].sort((a, b) => {
+                                const maxA = Math.max(...a.orders.map(o => o.id));
+                                const maxB = Math.max(...b.orders.map(o => o.id));
+                                return maxB - maxA;
+                            }).map(group => (
                                 <div key={group.customerId} className="dp-delivered-card">
                                     <div className="dp-delivered-header">
                                         <span className="dp-customer-name">{group.customerName}</span>

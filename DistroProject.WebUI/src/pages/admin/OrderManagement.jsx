@@ -69,7 +69,11 @@ const OrderManagement = () => {
             groups[cid].orders.push(order);
             groups[cid].totalPrice += order.totalPrice;
         });
-        return Object.values(groups);
+        return Object.values(groups).sort((a, b) => {
+            const maxA = Math.max(...a.orders.map(o => o.id));
+            const maxB = Math.max(...b.orders.map(o => o.id));
+            return maxB - maxA;
+        });
     }, [orders]);
 
     const handleAssignClick = (group) => {
@@ -112,7 +116,7 @@ const OrderManagement = () => {
 
     return (
         <div>
-            <Title level={2}>Order Management</Title>
+            <Title level={2} style={{ color: '#1a1a2e' }}>Order Management</Title>
 
             {loading ? (
                 <div style={{ textAlign: 'center', padding: 40 }}>Loading...</div>
@@ -153,7 +157,7 @@ const OrderManagement = () => {
                                             background: 'rgba(249,177,122,0.08)', borderRadius: 8, padding: '6px 12px',
                                             borderLeft: '3px solid #f9b17a', flexWrap: 'wrap', gap: 4
                                         }}>
-                                            <span style={{ fontWeight: 500, flex: 1, minWidth: 100 }}>{order.product?.name || `Product #${order.productId}`}</span>
+                                            <span style={{ fontWeight: 500, flex: 1, minWidth: 100, color: '#333' }}>{order.product?.name || `Product #${order.productId}`}</span>
                                             <span style={{ color: '#aaa', marginRight: 8 }}>x{order.quantity}</span>
                                             <span style={{ color: '#d97b3a', fontWeight: 600 }}>${order.totalPrice}</span>
                                         </div>

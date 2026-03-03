@@ -1,5 +1,5 @@
 import { Layout, Menu, Button, Drawer } from 'antd';
-import { UploadOutlined, LogoutOutlined, UnorderedListOutlined, MenuOutlined, DashboardOutlined, CarOutlined, UserOutlined } from '@ant-design/icons';
+import { UploadOutlined, LogoutOutlined, UnorderedListOutlined, MenuOutlined, DashboardOutlined, CarOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SiteHeader from '../components/Header';
@@ -55,6 +55,12 @@ const AdminLayout = () => {
             icon: <CarOutlined />,
             label: 'Driver Management',
             onClick: () => { navigate('/admin/drivers'); setDrawerOpen(false); },
+        },
+        {
+            key: '/admin/invoices',
+            icon: <FileTextOutlined />,
+            label: 'Invoices',
+            onClick: () => { navigate('/admin/invoices'); setDrawerOpen(false); },
         },
         {
             key: 'logout',

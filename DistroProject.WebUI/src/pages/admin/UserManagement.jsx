@@ -148,7 +148,7 @@ const UserManagement = () => {
                                 border: '1px solid #e8e8e8', flexWrap: 'wrap', gap: 8
                             }}>
                                 <div style={{ flex: 1, minWidth: 160 }}>
-                                    <div style={{ fontWeight: 600 }}>{user.name}</div>
+                                    <div style={{ fontWeight: 600, color: '#222' }}>{user.name}</div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{user.email}</div>
                                     {activeTab === 'customers' && (
                                         <div style={{ marginTop: 2 }}>
