@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, Table, Typography, Row, Col, Statistic, Tabs, message } from 'antd';
-import { DollarOutlined, ExperimentOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { DollarOutlined, ExperimentOutlined, ShoppingCartOutlined, CreditCardOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -8,6 +8,7 @@ const FinanceManagement = () => {
     const [totalProfit, setTotalProfit] = useState(0);
     const [productProfits, setProductProfits] = useState([]);
     const [orderProfits, setOrderProfits] = useState([]);
+    const [debts, setDebts] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const token = localStorage.getItem('token');
@@ -38,6 +39,12 @@ const FinanceManagement = () => {
             const resOrder = await fetch(`${import.meta.env.VITE_API_BASE_URL}/finance/order-profit`, { headers });
             if (resOrder.ok) {
                 setOrderProfits(await resOrder.json());
+            }
+
+            // Fetch Debts
+            const resDebts = await fetch(`${import.meta.env.VITE_API_BASE_URL}/finance/debts`, { headers });
+            if (resDebts.ok) {
+                setDebts(await resDebts.json());
             }
         } catch (error) {
             console.error('Veriler çekilirken hata oluştu:', error);
@@ -75,6 +82,35 @@ const FinanceManagement = () => {
         },
     ];
 
+    const debtColumns = [
+        { title: 'Müşteri No', dataIndex: 'id', key: 'id', width: 100 },
+        { title: 'Müşteri Adı', dataIndex: 'name', key: 'name' },
+        { title: 'E-Posta', dataIndex: 'email', key: 'email' },
+        { 
+            title: 'Toplam Borç', 
+            dataIndex: 'debtAmount', 
+            key: 'debtAmount',
+            align: 'right',
+            render: (val) => <Text type="danger" strong>${Number(val).toFixed(2)}</Text>
+        },
+    ];
+
+    const expandedRowRender = (record) => {
+        const columns = [
+            { title: 'Sipariş No', dataIndex: 'id', key: 'id' },
+            { title: 'Ürün', dataIndex: 'productName', key: 'productName' },
+            { title: 'Adet', dataIndex: 'quantity', key: 'quantity' },
+            { title: 'Sipariş Tarihi', dataIndex: 'orderDate', key: 'orderDate' },
+            { 
+                title: 'Tutar', 
+                dataIndex: 'totalPrice', 
+                key: 'totalPrice',
+                render: val => `$${Number(val).toFixed(2)}`
+            },
+        ];
+        return <Table columns={columns} dataSource={record.unpaidOrders} rowKey="id" pagination={false} size="small" />;
+    };
+
     const tabItems = [
         {
             key: '1',
@@ -99,6 +135,22 @@ const FinanceManagement = () => {
                     columns={orderColumns} 
                     dataSource={orderProfits} 
                     rowKey="orderId" 
+                    pagination={{ pageSize: 10 }} 
+                    loading={loading}
+                    bordered
+                    size="middle"
+                />
+            )
+        },
+        {
+            key: '3',
+            label: <span><CreditCardOutlined /> Müşteri Borçları (Premium)</span>,
+            children: (
+                <Table 
+                    columns={debtColumns} 
+                    dataSource={debts} 
+                    rowKey="id" 
+                    expandable={{ expandedRowRender }}
                     pagination={{ pageSize: 10 }} 
                     loading={loading}
                     bordered

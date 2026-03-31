@@ -73,4 +73,42 @@ public class FinanceController : ControllerBase
 
         return Ok(groupedProducts);
     }
+
+    // D. Premium Borç Analizi (Debts for Premium Users)
+    [HttpGet("debts")]
+    public async Task<IActionResult> GetDebts()
+    {
+        var usersWithDebt = await _context.Users
+            .Where(u => u.IsPremium && u.Balance < 0)
+            .ToListAsync();
+
+        var result = new List<object>();
+
+        foreach(var user in usersWithDebt)
+        {
+            var unpaidOrders = await _context.Orders
+                .Include(o => o.Product)
+                .Where(o => o.CustomerId == user.Id)
+                .Select(o => new
+                {
+                    o.Id,
+                    ProductName = o.Product != null ? o.Product.Name : "Bilinmiyor",
+                    o.Quantity,
+                    o.TotalPrice,
+                    OrderDate = o.OrderDate.ToString("dd MMM yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            result.Add(new
+            {
+                user.Id,
+                user.Name,
+                user.Email,
+                DebtAmount = Math.Abs(user.Balance),
+                UnpaidOrders = unpaidOrders
+            });
+        }
+
+        return Ok(result);
+    }
 }
