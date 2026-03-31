@@ -33,6 +33,12 @@ const AdminLayout = () => {
 
     const menuItems = [
         {
+            key: '/admin',
+            icon: <DashboardOutlined />,
+            label: 'Dashboard',
+            onClick: () => { navigate('/admin'); setDrawerOpen(false); },
+        },
+        {
             key: '/admin/orders',
             icon: <UnorderedListOutlined />,
             label: 'Order Management',
