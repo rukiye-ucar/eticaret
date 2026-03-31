@@ -12,6 +12,7 @@ import OrderManagement from './pages/admin/OrderManagement';
 import UserManagement from './pages/admin/UserManagement';
 import DriverManagement from './pages/admin/DriverManagement';
 import InvoiceManagement from './pages/admin/InvoiceManagement';
+import FinanceManagement from './pages/admin/FinanceManagement';
 import DriverPanel from './pages/driver/DriverPanel';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -87,6 +88,7 @@ function App() {
                 <Route path="users" element={<UserManagement />} />
                 <Route path="drivers" element={<DriverManagement />} />
                 <Route path="invoices" element={<InvoiceManagement />} />
+                <Route path="finance" element={<FinanceManagement />} />
               </Route>
             </Routes>
           </CartProvider>

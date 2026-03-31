@@ -1,5 +1,5 @@
 import { Layout, Menu, Button, Drawer } from 'antd';
-import { UploadOutlined, LogoutOutlined, UnorderedListOutlined, MenuOutlined, DashboardOutlined, CarOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
+import { UploadOutlined, LogoutOutlined, UnorderedListOutlined, MenuOutlined, DashboardOutlined, CarOutlined, UserOutlined, FileTextOutlined, DollarOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SiteHeader from '../components/Header';
@@ -61,6 +61,12 @@ const AdminLayout = () => {
             icon: <FileTextOutlined />,
             label: 'Invoices',
             onClick: () => { navigate('/admin/invoices'); setDrawerOpen(false); },
+        },
+        {
+            key: '/admin/finance',
+            icon: <DollarOutlined />,
+            label: 'Finance Management',
+            onClick: () => { navigate('/admin/finance'); setDrawerOpen(false); },
         },
         {
             key: 'logout',
