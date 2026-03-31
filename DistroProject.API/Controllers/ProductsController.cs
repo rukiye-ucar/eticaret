@@ -43,6 +43,7 @@ public class ProductsController : ControllerBase
         {
             Name = productDto.Name,
             Price = productDto.Price,
+            Cost = productDto.Cost,
             UnitType = productDto.UnitType,
             Stock = productDto.Stock,
             IsActive = true,
@@ -91,6 +92,7 @@ public class ProductsController : ControllerBase
 
         product.Name = productDto.Name;
         product.Price = productDto.Price;
+        product.Cost = productDto.Cost;
         product.UnitType = productDto.UnitType;
         product.Stock = productDto.Stock;
 

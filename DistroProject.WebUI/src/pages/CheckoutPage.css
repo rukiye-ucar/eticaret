@@ -509,3 +509,33 @@
     color: rgba(255, 255, 255, 0.3);
     margin: 0;
 }
+
+/* Required address badge — red */
+.address-badge-required {
+    display: inline-block;
+    background: rgba(255, 77, 79, 0.15);
+    border: 1px solid rgba(255, 77, 79, 0.4);
+    color: #ff7875;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Required address hint — orange warning */
+.checkout-address-hint--required {
+    padding: 12px 18px;
+    font-size: 0.82rem;
+    color: #f9b17a;
+    background: rgba(249, 177, 122, 0.06);
+    margin: 0;
+    border-top: 1px solid rgba(249, 177, 122, 0.1);
+}
+
+/* Pay Later warning when no address */
+.pay-later-address-warning {
+    color: #f9b17a;
+    font-size: 0.82rem;
+    margin-top: 10px;
+    text-align: center;
+}

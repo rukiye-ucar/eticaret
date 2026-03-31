@@ -88,7 +88,7 @@ const Header = () => {
         <>
             <Button type="link" onClick={() => { navigate('/'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Home</Button>
             <Button type="link" onClick={() => { navigate('/products'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Products</Button>
-            <Button type="link" style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>About Us</Button>
+            <Button type="link" onClick={() => { navigate('/about'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>About Us</Button>
 
             {/* Role Based Links */}
             {isAuthenticated && user?.role === 'Admin' && (

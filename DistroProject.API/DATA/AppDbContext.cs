@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<CustomerAddress> CustomerAddresses { get; set; }
+    public DbSet<CompanyInfo> CompanyInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

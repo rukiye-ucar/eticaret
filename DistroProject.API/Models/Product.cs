@@ -11,6 +11,9 @@ public class Product
     [Column(TypeName = "decimal(18,2)")] // To resolve precision warning
     public decimal Price { get; set; }
 
+    [Column(TypeName = "decimal(10,2)")] // Cost / Purchase price
+    public decimal Cost { get; set; } = 0;
+
     public string UnitType { get; set; } = "Piece"; // Kg, Liter, Piece
 
     public int Stock { get; set; }

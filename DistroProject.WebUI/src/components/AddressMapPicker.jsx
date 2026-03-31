@@ -79,6 +79,10 @@ const AddressMapPicker = ({ onAddressSelect, initialLat, initialLng, initialAddr
                 mapInstanceRef.current.remove();
                 mapInstanceRef.current = null;
             }
+            // Clear Leaflet's DOM marker so the container can be reused on remount
+            if (mapRef.current) {
+                delete mapRef.current._leaflet_id;
+            }
         };
     }, []);
 

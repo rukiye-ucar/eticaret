@@ -1,0 +1,13 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+c:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\CartController.cs(49,35): warning CS8602: Dereference of a possibly null reference. [c:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+c:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\CompanyController.cs(18,36): error CS1061: 'AppDbContext' does not contain a definition for 'CompanyInfos' and no accessible extension method 'CompanyInfos' accepting a first argument of type 'AppDbContext' could be found (are you missing a using directive or an assembly reference?) [c:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+
+Build FAILED.
+
+c:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\CartController.cs(49,35): warning CS8602: Dereference of a possibly null reference. [c:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+c:\Users\ucarr\Desktop\eticaret\DistroProject.API\Controllers\CompanyController.cs(18,36): error CS1061: 'AppDbContext' does not contain a definition for 'CompanyInfos' and no accessible extension method 'CompanyInfos' accepting a first argument of type 'AppDbContext' could be found (are you missing a using directive or an assembly reference?) [c:\Users\ucarr\Desktop\eticaret\DistroProject.API\DistroProject.API.csproj]
+    1 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.54

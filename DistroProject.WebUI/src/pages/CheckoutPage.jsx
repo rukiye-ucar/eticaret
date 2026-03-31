@@ -65,14 +65,19 @@ const CheckoutPage = () => {
 
     const handlePayment = async () => {
         if (!isFormValid) return;
+        if (!deliveryInfo) {
+            alert('Lütfen önce teslimat adresinizi seçin.');
+            setShowMap(true);
+            return;
+        }
         setLoading(true);
         try {
             await axiosInstance.post('/Orders/checkout', {
-                deliveryLat: deliveryInfo?.lat || null,
-                deliveryLng: deliveryInfo?.lng || null,
-                deliveryAddress: deliveryInfo?.address || null,
+                deliveryLat: deliveryInfo.lat,
+                deliveryLng: deliveryInfo.lng,
+                deliveryAddress: deliveryInfo.address,
             });
-            await clearCart(); // Clear frontend cart state
+            await clearCart();
             setLoading(false);
             navigate('/order-confirmation');
         } catch (error) {
@@ -83,14 +88,19 @@ const CheckoutPage = () => {
     };
 
     const handlePayLater = async () => {
+        if (!deliveryInfo) {
+            alert('Lütfen önce teslimat adresinizi seçin.');
+            setShowMap(true);
+            return;
+        }
         setPayLaterLoading(true);
         try {
             await axiosInstance.post('/Orders/checkout-pay-later', {
-                deliveryLat: deliveryInfo?.lat || null,
-                deliveryLng: deliveryInfo?.lng || null,
-                deliveryAddress: deliveryInfo?.address || null,
+                deliveryLat: deliveryInfo.lat,
+                deliveryLng: deliveryInfo.lng,
+                deliveryAddress: deliveryInfo.address,
             });
-            await clearCart(); // Clear frontend cart state
+            await clearCart();
             await refreshUser();
             setPayLaterLoading(false);
             navigate('/order-confirmation');
@@ -101,10 +111,11 @@ const CheckoutPage = () => {
         }
     };
 
-    if (cartItems.length === 0) {
-        navigate('/cart');
-        return null;
-    }
+    useEffect(() => {
+        if (cartItems.length === 0) {
+            navigate('/cart');
+        }
+    }, [cartItems.length]);
 
     return (
         <div className="checkout-page">
@@ -138,41 +149,16 @@ const CheckoutPage = () => {
                     <span className="checkout-total-amount">${totalPrice.toFixed(2)}</span>
                 </div>
 
-                {/* Pay Later for Premium */}
-                {user?.isPremium && (
-                    <div className="pay-later-section">
-                        <div className="pay-later-badge">
-                            ⭐ Premium Müşteri
-                        </div>
-                        <p className="pay-later-desc">
-                            Premium müşteri olarak siparişinizi şimdi verin, ödemeyi daha sonra yapın.
-                        </p>
-                        <button
-                            className="pay-later-btn"
-                            onClick={handlePayLater}
-                            disabled={payLaterLoading}
-                        >
-                            {payLaterLoading ? (
-                                <><div className="btn-spinner" /> İşleniyor...</>
-                            ) : (
-                                <><ClockCircleOutlined /> Daha Sonra Öde — ${totalPrice.toFixed(2)}</>
-                            )}
-                        </button>
-                        {user.balance < 0 && (
-                            <p className="pay-later-balance-warning">
-                                Mevcut borç: <strong>${Math.abs(user.balance).toFixed(2)}</strong>
-                            </p>
-                        )}
-                    </div>
-                )}
-
-                {/* Delivery Address Section */}
+                {/* Delivery Address Section — always shown, required */}
                 <div className="checkout-address-section">
                     <div className="checkout-address-header" onClick={() => setShowMap(!showMap)}>
                         <div className="checkout-address-title">
                             <EnvironmentOutlined style={{ color: '#f9b17a', fontSize: '1.1rem' }} />
                             <span>Teslimat Adresi</span>
-                            {deliveryInfo && <span className="address-badge">✓ Seçildi</span>}
+                            {deliveryInfo
+                                ? <span className="address-badge">✓ Seçildi</span>
+                                : <span className="address-badge address-badge-required">* Zorunlu</span>
+                            }
                         </div>
                         <span className="checkout-address-toggle">{showMap ? '▲' : '▼'} {showMap ? 'Gizle' : 'Haritayı Aç'}</span>
                     </div>
@@ -196,10 +182,42 @@ const CheckoutPage = () => {
                         </div>
                     )}
 
-                    {!deliveryInfo && !showMap && (
-                        <p className="checkout-address-hint">Teslimat adresi seçmek için haritayı açın (isteğe bağlı).</p>
-                    )}
+
                 </div>
+
+                {/* Pay Later for Premium — only after address selected */}
+                {user?.isPremium && (
+                    <div className="pay-later-section">
+                        <div className="pay-later-badge">
+                            ⭐ Premium Müşteri
+                        </div>
+                        <p className="pay-later-desc">
+                            Premium müşteri olarak siparişinizi şimdi verin, ödemeyi daha sonra yapın.
+                        </p>
+                        <button
+                            className="pay-later-btn"
+                            onClick={handlePayLater}
+                            disabled={payLaterLoading || !deliveryInfo}
+                            title={!deliveryInfo ? 'Önce teslimat adresi seçin' : ''}
+                        >
+                            {payLaterLoading ? (
+                                <><div className="btn-spinner" /> İşleniyor...</>
+                            ) : (
+                                <><ClockCircleOutlined /> Daha Sonra Öde — ${totalPrice.toFixed(2)}</>
+                            )}
+                        </button>
+                        {!deliveryInfo && (
+                            <p className="pay-later-address-warning">
+                                ⚠️ Daha sonra ödeme yapabilmek için önce teslimat adresini seçmelisiniz.
+                            </p>
+                        )}
+                        {user.balance < 0 && (
+                            <p className="pay-later-balance-warning">
+                                Mevcut borç: <strong>${Math.abs(user.balance).toFixed(2)}</strong>
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Payment Form */}
@@ -279,7 +297,7 @@ const CheckoutPage = () => {
                 <button
                     className="checkout-pay-btn"
                     onClick={handlePayment}
-                    disabled={!isFormValid || loading}
+                    disabled={!isFormValid || loading || !deliveryInfo}
                 >
                     {loading ? (
                         <><div className="btn-spinner" /> İşleniyor...</>

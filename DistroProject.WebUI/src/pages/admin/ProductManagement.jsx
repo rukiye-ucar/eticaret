@@ -44,6 +44,7 @@ const ProductManagement = () => {
         form.setFieldsValue({
             name: product.name,
             price: product.price,
+            cost: product.cost,
             stock: product.stock,
             unitType: product.unitType,
             categoryIds: product.categories?.map(c => c.id) || [],
@@ -74,6 +75,7 @@ const ProductManagement = () => {
         const formData = new FormData();
         formData.append('Name', values.name);
         formData.append('Price', values.price);
+        formData.append('Cost', values.cost ?? 0);
         formData.append('UnitType', values.unitType);
         formData.append('Stock', values.stock);
         if (values.categoryIds) values.categoryIds.forEach(id => formData.append('CategoryIds', id));
@@ -144,7 +146,16 @@ const ProductManagement = () => {
                                 </div>
                                 {/* Price + Actions */}
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-                                    <span style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>${product.price}</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                                        <span style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>
+                                            Satış: ${product.price}
+                                        </span>
+                                        {product.cost > 0 && (
+                                            <span style={{ fontSize: '0.78rem', color: '#888' }}>
+                                                Alış: ${product.cost}
+                                            </span>
+                                        )}
+                                    </div>
                                     <div style={{ display: 'flex', gap: 6 }}>
                                         <Button icon={<EditOutlined />} size="small" onClick={() => handleEditClick(product)}>Edit</Button>
                                         <Popconfirm
@@ -175,12 +186,21 @@ const ProductManagement = () => {
                     <Form.Item name="name" label="Product Name" rules={[{ required: true, message: 'Please enter product name' }]}>
                         <Input placeholder="Enter product name" />
                     </Form.Item>
-                    <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please enter price' }]}>
+                    <Form.Item name="price" label="Satış Fiyatı (Price)" rules={[{ required: true, message: 'Please enter price' }]}>
                         <InputNumber
                             style={{ width: '100%' }}
                             formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             parser={value => value.replace(/\$\s?|(,*)/g, '')}
                             min={0}
+                        />
+                    </Form.Item>
+                    <Form.Item name="cost" label="Alış Fiyatı (Cost)" rules={[{ required: false }]}>
+                        <InputNumber
+                            style={{ width: '100%' }}
+                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                            min={0}
+                            placeholder="0"
                         />
                     </Form.Item>
                     <Form.Item name="categoryIds" label="Categories" rules={[{ required: true, message: 'Please select at least one category' }]}>

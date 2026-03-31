@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Empty, Spin, Drawer, Button } from 'antd';
 import { FilterOutlined, CloseOutlined } from '@ant-design/icons';
 import { getProducts, getCategories } from '../api/productService';
@@ -11,6 +12,7 @@ const ProductList = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+    const [searchParams] = useSearchParams();
 
     // Filter states
     const [categories, setCategories] = useState([]);
@@ -23,6 +25,9 @@ const ProductList = () => {
     useEffect(() => {
         fetchProducts();
         fetchCategories();
+        // Pre-select category from URL ?category=...
+        const urlCat = searchParams.get('category');
+        if (urlCat) setSelectedCategories([decodeURIComponent(urlCat)]);
     }, []);
 
     useEffect(() => {

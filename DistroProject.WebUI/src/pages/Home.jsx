@@ -9,25 +9,25 @@ const categories = [
     {
         id: 1,
         title: 'Sensors',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        categoryParam: 'Sensors',
+        description: 'Industry-grade sensors engineered for precision. From depth perception to environmental monitoring — we deliver data you can trust.',
         image: depthSensor,
-        // Light -> Dark
         gradient: 'linear-gradient(135deg, #8ba8cc 0%, #050b14 100%)'
     },
     {
         id: 2,
         title: 'Mechanical',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        categoryParam: 'Mechanical',
+        description: 'Built to endure. Our mechanical components combine robust materials with flawless tolerances — because performance demands reliability.',
         image: depthSensor,
-        // Dark -> Light
         gradient: 'linear-gradient(135deg, #050b14 0%, #8ba8cc 100%)'
     },
     {
         id: 3,
         title: 'Electronics',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        categoryParam: 'Electronics',
+        description: 'Cutting-edge electronics for every application. Sourced from top-tier manufacturers and rigorously tested to power your most demanding projects.',
         image: depthSensor,
-        // Light -> Dark
         gradient: 'linear-gradient(135deg, #8ba8cc 0%, #050b14 100%)'
     }
 ];
@@ -43,7 +43,7 @@ const Home = () => {
                     <div
                         key={category.id}
                         className="category-card"
-                        onClick={() => navigate('/products')}
+                        onClick={() => navigate(`/products?category=${encodeURIComponent(category.categoryParam)}`)}
                         style={{
                             background: category.gradient,
                         }}
@@ -59,7 +59,7 @@ const Home = () => {
                                 className="text-section"
                                 style={{
                                     paddingRight: isEven ? 0 : '20px',
-                                    paddingLeft: isEven ? '60px' : 0,
+                                    paddingLeft: isEven ? '120px' : 0,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'flex-start'

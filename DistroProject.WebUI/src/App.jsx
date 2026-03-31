@@ -19,6 +19,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmation from './pages/OrderConfirmation';
 import MyAccount from './pages/MyAccount';
+import About from './pages/About';
 import bgImage from './assets/arkaplan.jpg';
 
 const ConsumerLayout = () => (
@@ -65,6 +66,7 @@ function App() {
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
                 <Route path="/account" element={<MyAccount />} />
+                <Route path="/about" element={<About />} />
               </Route>
 
               {/* Driver Routes */}

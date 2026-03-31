@@ -11,6 +11,8 @@ public class ProductUploadDto
     [Required]
     public decimal Price { get; set; }
 
+    public decimal Cost { get; set; } = 0;
+
     public string UnitType { get; set; } = "Piece";
 
     public int Stock { get; set; }
