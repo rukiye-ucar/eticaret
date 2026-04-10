@@ -51,11 +51,11 @@ const Dashboard = () => {
                     const stats = await res.json();
                     setData(stats);
                 } else {
-                    message.error('Veri çekilemedi.');
+                    message.error('Failed to fetch data.');
                 }
             } catch (err) {
                 console.error(err);
-                message.error('Bağlantı hatası.');
+                message.error('Connection error.');
             } finally {
                 setLoading(false);
             }
@@ -73,7 +73,7 @@ const Dashboard = () => {
         labels: data.dailySalesChart.map(x => x.date),
         datasets: [
             {
-                label: 'Günlük Ciro ($)',
+                label: 'Daily Revenue ($)',
                 data: data.dailySalesChart.map(x => x.revenue),
                 borderColor: 'rgb(249, 177, 122)',
                 backgroundColor: 'rgba(249, 177, 122, 0.5)',
@@ -87,7 +87,7 @@ const Dashboard = () => {
         labels: data.topCategories.map(x => x.categoryName),
         datasets: [
             {
-                label: 'Satılan Adet',
+                label: 'Quantity Sold',
                 data: data.topCategories.map(x => x.totalSold),
                 backgroundColor: [
                     '#576f9d', '#2d2250', '#f9b17a', '#7cb305', '#13c2c2', '#eb2f96'
@@ -98,24 +98,24 @@ const Dashboard = () => {
     };
 
     const productCols = [
-        { title: 'Ürün Adı', dataIndex: 'productName', key: 'productName' },
-        { title: 'Toplam Satış', dataIndex: 'totalSold', key: 'totalSold', align: 'center' },
+        { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
+        { title: 'Total Sales', dataIndex: 'totalSold', key: 'totalSold', align: 'center' },
     ];
 
     const categoryCols = [
-        { title: 'Kategori Adı', dataIndex: 'categoryName', key: 'categoryName' },
-        { title: 'Toplam Satış', dataIndex: 'totalSold', key: 'totalSold', align: 'center' },
+        { title: 'Category Name', dataIndex: 'categoryName', key: 'categoryName' },
+        { title: 'Total Sales', dataIndex: 'totalSold', key: 'totalSold', align: 'center' },
     ];
 
     return (
         <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh', borderRadius: 8 }}>
-            <TypographyTitle level={2} style={{ marginBottom: 24, color: '#1a1040' }}>Ana Yönetim Paneli</TypographyTitle>
+            <TypographyTitle level={2} style={{ marginBottom: 24, color: '#1a1040' }}>Main Dashboard</TypographyTitle>
 
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} sm={12} md={6}>
                     <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Statistic 
-                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Toplam Ciro</span>}
+                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Total Revenue</span>}
                             value={data.totalRevenue} 
                             precision={2} 
                             prefix={<DollarOutlined />} 
@@ -126,7 +126,7 @@ const Dashboard = () => {
                 <Col xs={24} sm={12} md={6}>
                     <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Statistic 
-                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Toplam Kar</span>}
+                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Total Profit</span>}
                             value={data.totalProfit} 
                             precision={2} 
                             prefix={<RiseOutlined />} 
@@ -137,7 +137,7 @@ const Dashboard = () => {
                 <Col xs={24} sm={12} md={6}>
                     <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Statistic 
-                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Bugünkü Satış</span>}
+                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Today's Sales</span>}
                             value={data.dailySales} 
                             precision={2} 
                             prefix={<FireOutlined />} 
@@ -148,7 +148,7 @@ const Dashboard = () => {
                 <Col xs={24} sm={12} md={6}>
                     <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Statistic 
-                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Bekleyen Sipariş</span>}
+                            title={<span style={{ color: '#ffffff', opacity: 0.85 }}>Pending Orders</span>}
                             value={data.pendingOrdersCount} 
                             prefix={<ExceptionOutlined />} 
                             valueStyle={{ color: '#ffe58f', fontWeight: 'bold' }} 
@@ -157,10 +157,10 @@ const Dashboard = () => {
                 </Col>
             </Row>
 
-            {/* Grafikler */}
+            {/* Charts */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} lg={16}>
-                    <Card title={<span style={{ color: '#ffffff' }}>Son 7 Günlük Satış Trendi</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <Card title={<span style={{ color: '#ffffff' }}>Last 7 Days Sales Trend</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <div style={{ height: 300 }}>
                             <Line data={lineChartData} options={{ 
                                 maintainAspectRatio: false,
@@ -168,13 +168,13 @@ const Dashboard = () => {
                                     x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
                                     y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
                                 },
-                                plugins: { legend: { labels: { color: '#ffffff' } } }
+                                plugins: { legend: { display: false } }
                             }} />
                         </div>
                     </Card>
                 </Col>
                 <Col xs={24} lg={8}>
-                    <Card title={<span style={{ color: '#ffffff' }}>Kategori Satış Dağılımı</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <Card title={<span style={{ color: '#ffffff' }}>Category Sales Distribution</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <div style={{ height: 300, display: 'flex', justifyContent: 'center' }}>
                             <Pie data={pieChartData} options={{ 
                                 maintainAspectRatio: false, 
@@ -185,10 +185,10 @@ const Dashboard = () => {
                 </Col>
             </Row>
 
-            {/* Listeler */}
+            {/* Lists */}
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
-                    <Card title={<span style={{ color: '#ffffff' }}>En Çok Satan Ürünler</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <Card title={<span style={{ color: '#ffffff' }}>Top Selling Products</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Table 
                             columns={productCols} 
                             dataSource={data.topProducts} 
@@ -199,7 +199,7 @@ const Dashboard = () => {
                     </Card>
                 </Col>
                 <Col xs={24} lg={12}>
-                    <Card title={<span style={{ color: '#ffffff' }}>En Çok Satan Kategoriler</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <Card title={<span style={{ color: '#ffffff' }}>Top Selling Categories</span>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                         <Table 
                             columns={categoryCols} 
                             dataSource={data.topCategories} 

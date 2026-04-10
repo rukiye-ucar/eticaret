@@ -32,15 +32,18 @@ const ProductCard = ({ product }) => {
         navigate(`/products/${product.id}`);
     };
 
+    const isOutOfStock = product.stock === 0;
+
     return (
         <div className="product-card" onClick={handleCardClick}>
             {/* Product Image */}
-            <div className="product-image-container">
+            <div className={`product-image-container ${isOutOfStock ? 'out-of-stock-img' : ''}`}>
                 <img
                     src={getImageUrl(product.image, product.imageContentType)}
                     alt={product.name}
                     className="product-image"
                 />
+                {isOutOfStock && <div className="out-of-stock-badge">OUT OF STOCK</div>}
             </div>
 
             {/* Product Info */}
@@ -58,8 +61,9 @@ const ProductCard = ({ product }) => {
                     icon={<ShoppingCartOutlined />}
                     className="add-to-cart-btn"
                     onClick={handleAddToCart}
+                    disabled={isOutOfStock}
                 >
-                    Add to Cart
+                    {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </Button>
             </div>
         </div>

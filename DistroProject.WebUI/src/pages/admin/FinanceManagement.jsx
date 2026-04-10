@@ -47,47 +47,47 @@ const FinanceManagement = () => {
                 setDebts(await resDebts.json());
             }
         } catch (error) {
-            console.error('Veriler çekilirken hata oluştu:', error);
-            message.error('Finans verileri yüklenirken bir sorun oluştu.');
+            console.error('Error fetching data:', error);
+            message.error('An error occurred while loading finance data.');
         } finally {
             setLoading(false);
         }
     };
 
     const orderColumns = [
-        { title: 'Sipariş No', dataIndex: 'orderId', key: 'orderId', width: 100 },
-        { title: 'Tarih', dataIndex: 'orderDate', key: 'orderDate', render: (val) => val ? new Date(val).toLocaleDateString('tr-TR') : '-' },
-        { title: 'Müşteri', dataIndex: 'customerName', key: 'customerName' },
-        { title: 'Ürün', dataIndex: 'productName', key: 'productName' },
-        { title: 'Adet', dataIndex: 'quantity', key: 'quantity', align: 'center' },
+        { title: 'Order No', dataIndex: 'orderId', key: 'orderId', width: 100 },
+        { title: 'Date', dataIndex: 'orderDate', key: 'orderDate', render: (val) => val ? new Date(val).toLocaleDateString('en-US') : '-' },
+        { title: 'Customer', dataIndex: 'customerName', key: 'customerName' },
+        { title: 'Product', dataIndex: 'productName', key: 'productName' },
+        { title: 'Quantity', dataIndex: 'quantity', key: 'quantity', align: 'center' },
         { 
-            title: 'Net Kar', 
+            title: 'Net Profit', 
             dataIndex: 'profit', 
             key: 'profit', 
             align: 'right',
-            render: (val) => <Text type="success" strong>${Number(val).toFixed(2)}</Text>
+            render: (val) => <Text type={Number(val) < 0 ? "danger" : "success"} strong>${Number(val).toFixed(2)}</Text>
         },
     ];
 
     const productColumns = [
         { title: 'ID', dataIndex: 'productId', key: 'productId', width: 80 },
-        { title: 'Ürün Adı', dataIndex: 'productName', key: 'productName' },
-        { title: 'Toplam Satılan (Adet)', dataIndex: 'totalSoldQuantity', key: 'totalSoldQuantity', align: 'center' },
+        { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
+        { title: 'Total Sold (Qty)', dataIndex: 'totalSoldQuantity', key: 'totalSoldQuantity', align: 'center' },
         { 
-            title: 'Toplam Kar', 
+            title: 'Total Profit', 
             dataIndex: 'totalProfit', 
             key: 'totalProfit',
             align: 'right',
-            render: (val) => <Text type="success" strong>${Number(val).toFixed(2)}</Text>
+            render: (val) => <Text type={Number(val) < 0 ? "danger" : "success"} strong>${Number(val).toFixed(2)}</Text>
         },
     ];
 
     const debtColumns = [
-        { title: 'Müşteri No', dataIndex: 'id', key: 'id', width: 100 },
-        { title: 'Müşteri Adı', dataIndex: 'name', key: 'name' },
-        { title: 'E-Posta', dataIndex: 'email', key: 'email' },
+        { title: 'Customer No', dataIndex: 'id', key: 'id', width: 100 },
+        { title: 'Customer Name', dataIndex: 'name', key: 'name' },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
         { 
-            title: 'Toplam Borç', 
+            title: 'Total Debt', 
             dataIndex: 'debtAmount', 
             key: 'debtAmount',
             align: 'right',
@@ -97,12 +97,12 @@ const FinanceManagement = () => {
 
     const expandedRowRender = (record) => {
         const columns = [
-            { title: 'Sipariş No', dataIndex: 'id', key: 'id' },
-            { title: 'Ürün', dataIndex: 'productName', key: 'productName' },
-            { title: 'Adet', dataIndex: 'quantity', key: 'quantity' },
-            { title: 'Sipariş Tarihi', dataIndex: 'orderDate', key: 'orderDate' },
+            { title: 'Order No', dataIndex: 'id', key: 'id' },
+            { title: 'Product', dataIndex: 'productName', key: 'productName' },
+            { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+            { title: 'Order Date', dataIndex: 'orderDate', key: 'orderDate' },
             { 
-                title: 'Tutar', 
+                title: 'Amount', 
                 dataIndex: 'totalPrice', 
                 key: 'totalPrice',
                 render: val => `$${Number(val).toFixed(2)}`
@@ -114,7 +114,7 @@ const FinanceManagement = () => {
     const tabItems = [
         {
             key: '1',
-            label: <span><ExperimentOutlined /> Ürün Bazlı Kar Analizi</span>,
+            label: <span><ExperimentOutlined /> Product-Based Profit Analysis</span>,
             children: (
                 <Table 
                     columns={productColumns} 
@@ -129,7 +129,7 @@ const FinanceManagement = () => {
         },
         {
             key: '2',
-            label: <span><ShoppingCartOutlined /> Sipariş Karlılık Geçmişi</span>,
+            label: <span><ShoppingCartOutlined /> Order Profitability History</span>,
             children: (
                 <Table 
                     columns={orderColumns} 
@@ -144,7 +144,7 @@ const FinanceManagement = () => {
         },
         {
             key: '3',
-            label: <span><CreditCardOutlined /> Müşteri Borçları (Premium)</span>,
+            label: <span><CreditCardOutlined /> Customer Debts (Premium)</span>,
             children: (
                 <Table 
                     columns={debtColumns} 
@@ -161,17 +161,17 @@ const FinanceManagement = () => {
     ];
 
     return (
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh', borderRadius: 8 }}>
             <div style={{ marginBottom: 24 }}>
-                <Title level={2} style={{ margin: 0 }}>📊 Finans ve Kar Analizi</Title>
-                <Text type="secondary">Satış ve alış fiyatı (cost) arasındaki farka dayanarak hesaplanan sistem genelindeki kar metrikleri.</Text>
+                <Title level={2} style={{ margin: 0, color: '#1a1040' }}>📊 Finance and Profit Analysis</Title>
+                <Text style={{ color: '#555' }}>System-wide profit metrics calculated based on the difference between sales and cost prices.</Text>
             </div>
 
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} sm={12} md={8}>
                     <Card style={{ borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', background: '#f6ffed', borderColor: '#b7eb8f' }}>
                         <Statistic
-                            title={<span style={{ fontWeight: 600, color: '#389e0d', fontSize: '1.2rem' }}>Toplam Kar (Net)</span>}
+                            title={<span style={{ fontWeight: 600, color: '#389e0d', fontSize: '1.2rem' }}>Total Profit (Net)</span>}
                             value={totalProfit}
                             precision={2}
                             prefix={<DollarOutlined />}

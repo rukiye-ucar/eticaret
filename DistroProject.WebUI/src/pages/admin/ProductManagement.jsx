@@ -139,7 +139,11 @@ const ProductManagement = () => {
                                 {/* Info */}
                                 <div style={{ flex: 1, minWidth: 140 }}>
                                     <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{product.name}</div>
-                                    <div style={{ color: '#888', fontSize: '0.82rem' }}>Stock: {product.stock} · {product.unitType}</div>
+                                    <div style={{ color: '#888', fontSize: '0.82rem' }}>
+                                        Stock: {product.stock} · {product.unitType}
+                                        {product.stock === 0 && <Tag color="error" style={{ marginLeft: 8 }}>Out of Stock</Tag>}
+                                        {product.stock > 0 && product.stock <= 5 && <Tag color="warning" style={{ marginLeft: 8 }}>Low Stock</Tag>}
+                                    </div>
                                     <div style={{ marginTop: 4 }}>
                                         {product.categories?.map(cat => <Tag key={cat.id} color="blue">{cat.name}</Tag>)}
                                     </div>
@@ -148,11 +152,11 @@ const ProductManagement = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                                         <span style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>
-                                            Satış: ${product.price}
+                                            Price: ${product.price}
                                         </span>
                                         {product.cost > 0 && (
                                             <span style={{ fontSize: '0.78rem', color: '#888' }}>
-                                                Alış: ${product.cost}
+                                                Cost: ${product.cost}
                                             </span>
                                         )}
                                     </div>
@@ -186,7 +190,7 @@ const ProductManagement = () => {
                     <Form.Item name="name" label="Product Name" rules={[{ required: true, message: 'Please enter product name' }]}>
                         <Input placeholder="Enter product name" />
                     </Form.Item>
-                    <Form.Item name="price" label="Satış Fiyatı (Price)" rules={[{ required: true, message: 'Please enter price' }]}>
+                    <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please enter price' }]}>
                         <InputNumber
                             style={{ width: '100%' }}
                             formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -194,7 +198,7 @@ const ProductManagement = () => {
                             min={0}
                         />
                     </Form.Item>
-                    <Form.Item name="cost" label="Alış Fiyatı (Cost)" rules={[{ required: false }]}>
+                    <Form.Item name="cost" label="Cost" rules={[{ required: false }]}>
                         <InputNumber
                             style={{ width: '100%' }}
                             formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}

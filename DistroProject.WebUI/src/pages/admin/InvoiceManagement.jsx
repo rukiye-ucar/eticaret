@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Button, Spin, Input, Empty, Tooltip } from 'antd';
+import { Button, Spin, Input, Empty, Tooltip, AutoComplete } from 'antd';
 import { FilePdfOutlined, DownloadOutlined, SearchOutlined, FileTextOutlined } from '@ant-design/icons';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -255,6 +255,23 @@ const InvoiceManagement = () => {
         );
     }, [invoiceGroups, search]);
 
+    const searchOptions = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        if (q.length < 2) return [];
+
+        const suggestions = new Set();
+        invoiceGroups.forEach(g => {
+            if (String(g.invoiceNo).includes(q)) suggestions.add(String(g.invoiceNo));
+            if (g.customerName.toLowerCase().includes(q)) suggestions.add(g.customerName);
+            g.orders.forEach(o => {
+                const pName = o.product?.name || '';
+                if (pName.toLowerCase().includes(q)) suggestions.add(pName);
+            });
+        });
+
+        return Array.from(suggestions).slice(0, 10).map(s => ({ value: s }));
+    }, [search, invoiceGroups]);
+
     const handlePDF = async (group, action) => {
         const genKey = group.key + action;
         setGeneratingKey(genKey);
@@ -273,14 +290,17 @@ const InvoiceManagement = () => {
                         <p className="inv-subtitle">View or download PDF invoices for each purchase.</p>
                     </div>
                 </div>
-                <Input
+                <AutoComplete
                     className="inv-search"
-                    placeholder="Invoice no, customer name, product..."
-                    prefix={<SearchOutlined />}
+                    options={searchOptions}
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(val) => setSearch(val || '')}
+                    onSelect={(val) => setSearch(val || '')}
+                    placeholder="Invoice no, customer name, product..."
                     allowClear
-                />
+                >
+                    <Input prefix={<SearchOutlined />} />
+                </AutoComplete>
             </div>
 
             {loading ? (
