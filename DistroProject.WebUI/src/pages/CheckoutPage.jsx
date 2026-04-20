@@ -137,7 +137,7 @@ const CheckoutPage = () => {
                             <div className="checkout-item-qty">Adet: {quantity}</div>
                         </div>
                         <div className="checkout-item-price">
-                            ${(product.price * quantity).toFixed(2)}
+                            {(product.price * quantity).toFixed(2)} TL
                         </div>
                     </div>
                 ))}
@@ -146,7 +146,7 @@ const CheckoutPage = () => {
 
                 <div className="checkout-total-row">
                     <span className="checkout-total-label">Toplam</span>
-                    <span className="checkout-total-amount">${totalPrice.toFixed(2)}</span>
+                    <span className="checkout-total-amount">{totalPrice.toFixed(2)} TL</span>
                 </div>
 
                 {/* Delivery Address Section — always shown, required */}
@@ -203,7 +203,7 @@ const CheckoutPage = () => {
                             {payLaterLoading ? (
                                 <><div className="btn-spinner" /> İşleniyor...</>
                             ) : (
-                                <><ClockCircleOutlined /> Daha Sonra Öde — ${totalPrice.toFixed(2)}</>
+                                <><ClockCircleOutlined /> Daha Sonra Öde — {totalPrice.toFixed(2)} TL</>
                             )}
                         </button>
                         {!deliveryInfo && (
@@ -213,7 +213,7 @@ const CheckoutPage = () => {
                         )}
                         {user.balance < 0 && (
                             <p className="pay-later-balance-warning">
-                                Mevcut borç: <strong>${Math.abs(user.balance).toFixed(2)}</strong>
+                                Mevcut borç: <strong>{Math.abs(user.balance).toFixed(2)} TL</strong>
                             </p>
                         )}
                     </div>
@@ -302,7 +302,7 @@ const CheckoutPage = () => {
                     {loading ? (
                         <><div className="btn-spinner" /> İşleniyor...</>
                     ) : (
-                        <><LockOutlined /> Ödeme Yap — ${totalPrice.toFixed(2)}</>
+                        <><LockOutlined /> Ödeme Yap — {totalPrice.toFixed(2)} TL</>
                     )}
                 </button>
 

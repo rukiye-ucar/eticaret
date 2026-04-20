@@ -35,49 +35,49 @@ const AdminLayout = () => {
         {
             key: '/admin',
             icon: <DashboardOutlined />,
-            label: 'Dashboard',
+            label: 'Panel',
             onClick: () => { navigate('/admin'); setDrawerOpen(false); },
         },
         {
             key: '/admin/orders',
             icon: <UnorderedListOutlined />,
-            label: 'Order Management',
+            label: 'Sipariş Yönetimi',
             onClick: () => { navigate('/admin/orders'); setDrawerOpen(false); },
         },
         {
             key: '/admin/users',
             icon: <UserOutlined />,
-            label: 'User Management',
+            label: 'Kullanıcı Yönetimi',
             onClick: () => { navigate('/admin/users'); setDrawerOpen(false); },
         },
         {
             key: '/admin/products',
             icon: <UploadOutlined />,
-            label: 'Product Management',
+            label: 'Ürün Yönetimi',
             onClick: () => { navigate('/admin/products'); setDrawerOpen(false); },
         },
         {
             key: '/admin/drivers',
             icon: <CarOutlined />,
-            label: 'Driver Management',
+            label: 'Şoför Yönetimi',
             onClick: () => { navigate('/admin/drivers'); setDrawerOpen(false); },
         },
         {
             key: '/admin/invoices',
             icon: <FileTextOutlined />,
-            label: 'Invoices',
+            label: 'Faturalar',
             onClick: () => { navigate('/admin/invoices'); setDrawerOpen(false); },
         },
         {
             key: '/admin/finance',
             icon: <DollarOutlined />,
-            label: 'Finance Management',
+            label: 'Finans Yönetimi',
             onClick: () => { navigate('/admin/finance'); setDrawerOpen(false); },
         },
         {
             key: 'logout',
             icon: <LogoutOutlined />,
-            label: 'Log Out',
+            label: 'Çıkış Yap',
             onClick: handleLogout,
             danger: true,
         },
@@ -97,7 +97,7 @@ const AdminLayout = () => {
                         marginBottom: 8
                     }}>
                         <DashboardOutlined style={{ color: '#f9b17a', fontSize: 18, marginRight: 8 }} />
-                        <span style={{ color: '#f9b17a', fontWeight: 700, fontSize: '0.95rem' }}>Admin Panel</span>
+                        <span style={{ color: '#f9b17a', fontWeight: 700, fontSize: '0.95rem' }}>Admin Paneli</span>
                     </div>
                     <Menu
                         theme="dark"
@@ -130,7 +130,7 @@ const AdminLayout = () => {
                     title={
                         <span style={{ color: '#f9b17a', fontWeight: 700 }}>
                             <DashboardOutlined style={{ marginRight: 8 }} />
-                            Admin Panel
+                            Admin Paneli
                         </span>
                     }
                     placement="left"

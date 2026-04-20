@@ -25,10 +25,10 @@ const OrderManagement = () => {
                 const data = await response.json();
                 setOrders(data);
             } else {
-                message.error('Failed to fetch orders');
+                message.error('Siparişler yüklenemedi');
             }
         } catch (error) {
-            console.error('Error fetching orders:', error);
+            console.error('Siparişler çekilirken hata:', error);
         } finally {
             setLoading(false);
         }
@@ -85,7 +85,7 @@ const OrderManagement = () => {
 
     const handleAssignSubmit = async () => {
         if (!selectedDriver) {
-            message.warning('Please select a driver!');
+            message.warning('Lütfen bir şoför seçin!');
             return;
         }
         const orderIds = selectedGroup.orders.map(o => o.id);
@@ -96,14 +96,14 @@ const OrderManagement = () => {
                 body: JSON.stringify(orderIds)
             });
             if (response.ok) {
-                message.success(`${orderIds.length} orders assigned to driver!`);
+                message.success(`${orderIds.length} sipariş şoföre atandı!`);
                 setAssignModalVisible(false);
                 fetchOrders();
             } else {
-                message.error('Failed to assign driver');
+                message.error('Şoför atanamadı');
             }
         } catch (error) {
-            message.error('An error occurred');
+            message.error('Bir hata oluştu');
         }
     };
 
@@ -112,16 +112,24 @@ const OrderManagement = () => {
         return statuses.length === 1 ? statuses[0] : 'Mixed';
     };
 
+    const statusMap = {
+        Pending: 'BEKLEMEDE',
+        Shipped: 'KARGODA',
+        Delivered: 'TESLİM EDİLDİ',
+        PartialDelivered: 'KISMİ TESLİMAT',
+        Mixed: 'KARIŞIK'
+    };
+
     const statusColorMap = { Pending: 'orange', Shipped: 'blue', Delivered: 'green', PartialDelivered: 'purple', Mixed: 'default' };
 
     return (
         <div>
-            <Title level={2} style={{ color: '#1a1a2e' }}>Order Management</Title>
+            <Title level={2} style={{ color: '#1a1a2e' }}>Sipariş Yönetimi</Title>
 
             {loading ? (
-                <div style={{ textAlign: 'center', padding: 40 }}>Loading...</div>
+                <div style={{ textAlign: 'center', padding: 40 }}>Yükleniyor...</div>
             ) : groupedOrders.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>No orders found.</div>
+                <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>Sipariş bulunamadı.</div>
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     {groupedOrders.map(group => {
@@ -140,12 +148,12 @@ const OrderManagement = () => {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                                     <div>
                                         <div style={{ fontWeight: 700, color: '#d97b3a', fontSize: '1rem' }}>{group.customerName}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#888' }}>Customer ID: {group.customerId}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#888' }}>Müşteri ID: {group.customerId}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                                        <Tag color={statusColorMap[status] || 'default'}>{status.toUpperCase()}</Tag>
-                                        <span style={{ fontWeight: 700, color: '#d97b3a' }}>${group.totalPrice.toFixed(2)}</span>
-                                        <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{new Date(group.date).toLocaleDateString('en-US')}</span>
+                                        <Tag color={statusColorMap[status] || 'default'}>{statusMap[status] || status.toUpperCase()}</Tag>
+                                        <span style={{ fontWeight: 700, color: '#d97b3a' }}>{group.totalPrice.toFixed(2)} TL</span>
+                                        <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{new Date(group.date).toLocaleDateString('tr-TR')}</span>
                                     </div>
                                 </div>
 
@@ -157,9 +165,9 @@ const OrderManagement = () => {
                                             background: 'rgba(249,177,122,0.08)', borderRadius: 8, padding: '6px 12px',
                                             borderLeft: '3px solid #f9b17a', flexWrap: 'wrap', gap: 4
                                         }}>
-                                            <span style={{ fontWeight: 500, flex: 1, minWidth: 100, color: '#333' }}>{order.product?.name || `Product #${order.productId}`}</span>
+                                            <span style={{ fontWeight: 500, flex: 1, minWidth: 100, color: '#333' }}>{order.product?.name || `Ürün #${order.productId}`}</span>
                                             <span style={{ color: '#aaa', marginRight: 8 }}>x{order.quantity}</span>
-                                            <span style={{ color: '#d97b3a', fontWeight: 600 }}>${order.totalPrice}</span>
+                                            <span style={{ color: '#d97b3a', fontWeight: 600 }}>{order.totalPrice} TL</span>
                                         </div>
                                     ))}
                                 </div>
@@ -169,7 +177,7 @@ const OrderManagement = () => {
                                     {hasDriver ? (
                                         <Tag color="blue" icon={<CarOutlined />}>{driver.name || driver.email}</Tag>
                                     ) : (
-                                        <Tag color="default">No Driver Assigned</Tag>
+                                        <Tag color="default">Şoför Atanmadı</Tag>
                                     )}
                                     <Button
                                         type={hasDriver ? 'default' : 'primary'}
@@ -177,7 +185,7 @@ const OrderManagement = () => {
                                         onClick={() => handleAssignClick(group)}
                                         style={hasDriver ? { borderColor: '#4a9eff', color: '#4a9eff' } : {}}
                                     >
-                                        {hasDriver ? 'Change Driver' : 'Assign Driver'}
+                                        {hasDriver ? 'Şoförü Değiştir' : 'Şoför Ata'}
                                     </Button>
                                 </div>
                             </div>
@@ -187,34 +195,33 @@ const OrderManagement = () => {
             )}
 
             <Modal
-                title={selectedGroup?.orders?.[0]?.driver ? '🔄 Change Driver' : '🚚 Assign Driver'}
+                title={selectedGroup?.orders?.[0]?.driver ? '🔄 Şoförü Değiştir' : '🚚 Şoför Ata'}
                 open={assignModalVisible}
                 onOk={handleAssignSubmit}
                 onCancel={() => setAssignModalVisible(false)}
-                okText="Assign"
-                cancelText="Cancel"
+                okText="Ata"
+                cancelText="İptal"
             >
                 {selectedGroup?.orders?.[0]?.driver && (
                     <div style={{ marginBottom: 12, padding: '8px 12px', background: 'rgba(74,158,255,0.08)', border: '1px solid rgba(74,158,255,0.25)', borderRadius: 8, fontSize: '0.85rem', color: '#4a9eff' }}>
                         <CarOutlined style={{ marginRight: 6 }} />
-                        Current driver: <strong>{selectedGroup.orders[0].driver.name || selectedGroup.orders[0].driver.email}</strong>
+                        Mevcut şoför: <strong>{selectedGroup.orders[0].driver.name || selectedGroup.orders[0].driver.email}</strong>
                     </div>
                 )}
                 <p>
-                    Assigning <strong>{selectedGroup?.orders?.length}</strong> order(s) for customer{' '}
-                    <strong>{selectedGroup?.customerName}</strong> to a driver:
+                    <strong>{selectedGroup?.customerName}</strong> müşterisine ait <strong>{selectedGroup?.orders?.length}</strong> sipariş bir şoföre atanıyor:
                 </p>
                 <div style={{ marginBottom: 16 }}>
                     {selectedGroup?.orders?.map(order => (
                         <div key={order.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px', background: 'rgba(0,0,0,0.03)', borderRadius: 6, marginBottom: 4 }}>
                             <span>{order.product?.name}</span>
-                            <span style={{ color: '#d97b3a' }}>x{order.quantity} — ${order.totalPrice}</span>
+                            <span style={{ color: '#d97b3a' }}>x{order.quantity} — {order.totalPrice} TL</span>
                         </div>
                     ))}
                 </div>
                 <Select
                     style={{ width: '100%' }}
-                    placeholder="Select a driver"
+                    placeholder="Bir şoför seçin"
                     onChange={(value) => setSelectedDriver(value)}
                     value={selectedDriver}
                 >

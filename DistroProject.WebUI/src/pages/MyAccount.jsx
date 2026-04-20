@@ -56,11 +56,11 @@ const MyAccount = () => {
     };
 
     const statusConfig = {
-        Pending: { color: 'orange', text: 'Pending Approval', icon: <ClockCircleOutlined /> },
-        Approved: { color: 'blue', text: 'Approved', icon: <CheckCircleOutlined /> },
-        Shipped: { color: 'cyan', text: 'Shipped', icon: <CarOutlined /> },
-        Delivered: { color: 'green', text: 'Delivered', icon: <CheckCircleOutlined /> },
-        PartialDelivered: { color: 'purple', text: 'Partial Delivery', icon: <InboxOutlined /> },
+        Pending: { color: 'orange', text: 'Onay Bekliyor', icon: <ClockCircleOutlined /> },
+        Approved: { color: 'blue', text: 'Onaylandı', icon: <CheckCircleOutlined /> },
+        Shipped: { color: 'cyan', text: 'Kargoya Verildi', icon: <CarOutlined /> },
+        Delivered: { color: 'green', text: 'Teslim Edildi', icon: <CheckCircleOutlined /> },
+        PartialDelivered: { color: 'purple', text: 'Kısmi Teslimat', icon: <InboxOutlined /> },
     };
 
     const getStatusTag = (status) => {
@@ -102,11 +102,11 @@ const MyAccount = () => {
     const openPaymentModal = () => {
         const maxPayable = user.balance < 0 ? Math.abs(user.balance) : 0;
         if (paymentAmount <= 0) {
-            message.warning('Please enter a valid payment amount.');
+            message.warning('Lütfen geçerli bir ödeme tutarı girin.');
             return;
         }
         if (paymentAmount > maxPayable) {
-            message.warning(`You can pay at most $${maxPayable.toFixed(2)}.`);
+            message.warning(`En fazla ${maxPayable.toFixed(2)} TL ödeyebilirsiniz.`);
             return;
         }
         setIsPaymentModalVisible(true);
@@ -125,9 +125,9 @@ const MyAccount = () => {
                 body: JSON.stringify({ amount: paymentAmount }),
             });
             if (res.ok) {
-                message.success(`$${paymentAmount} payment successful!`);
+                message.success(`${paymentAmount} TL ödeme başarıyla gerçekleşti!`);
                 setPaymentAmount(0);
-                // Clear card
+                // Kartı temizle
                 setCardNumber('');
                 setCardHolder('');
                 setExpiry('');
@@ -135,10 +135,10 @@ const MyAccount = () => {
                 setIsPaymentModalVisible(false);
                 await refreshUser();
             } else {
-                message.error('Payment failed.');
+                message.error('Ödeme başarısız oldu.');
             }
         } catch (err) {
-            message.error('An error occurred.');
+            message.error('Bir hata oluştu.');
         } finally {
             setPaymentLoading(false);
         }
@@ -178,7 +178,7 @@ const MyAccount = () => {
                 </div>
                 <div>
                     <Title level={2} style={{ margin: 0, color: '#fff' }}>
-                        {user?.name || 'My Account'}
+                        {user?.name || 'Hesabım'}
                     </Title>
                     <Text style={{ color: '#aab8d0' }}>{user?.email}</Text>
                 </div>
@@ -190,36 +190,36 @@ const MyAccount = () => {
                     <ShoppingOutlined className="acc-stat-icon" />
                     <div>
                         <h3>{totalOrders}</h3>
-                        <span>Total Orders</span>
+                        <span>Toplam Sipariş</span>
                     </div>
                 </div>
                 <div className="acc-stat-card">
                     <ClockCircleOutlined className="acc-stat-icon pending" />
                     <div>
                         <h3>{pendingCount}</h3>
-                        <span>Pending</span>
+                        <span>Beklemede</span>
                     </div>
                 </div>
                 <div className="acc-stat-card">
                     <CarOutlined className="acc-stat-icon shipped" />
                     <div>
                         <h3>{shippedCount}</h3>
-                        <span>Shipped</span>
+                        <span>Kargoda</span>
                     </div>
                 </div>
                 <div className="acc-stat-card">
                     <CheckCircleOutlined className="acc-stat-icon delivered" />
                     <div>
                         <h3>{deliveredCount}</h3>
-                        <span>Delivered</span>
+                        <span>Teslim Edildi</span>
                     </div>
                 </div>
             </div>
 
             {/* Total spent */}
             <div className="total-spent-bar">
-                <span>Total Spent</span>
-                <span className="total-spent-amount">${totalSpent.toFixed(2)}</span>
+                <span>Toplam Harcama</span>
+                <span className="total-spent-amount">{totalSpent.toFixed(2)} TL</span>
             </div>
 
             {/* Premium Balance Section */}
@@ -227,17 +227,17 @@ const MyAccount = () => {
                 <div className="premium-balance-section">
                     <div className="premium-balance-header">
                         <CrownOutlined style={{ color: '#f9b17a', fontSize: 20 }} />
-                        <span className="premium-badge-label">Premium Customer</span>
+                        <span className="premium-badge-label">Premium Müşteri</span>
                     </div>
                     <div className="balance-display">
-                        <span className="balance-label">Balance</span>
+                        <span className="balance-label">Bakiye</span>
                         <span className={`balance-amount ${user.balance < 0 ? 'negative' : 'positive'}`}>
-                            {user.balance < 0 ? `-$${Math.abs(user.balance).toFixed(2)}` : `$${user.balance.toFixed(2)}`}
+                            {user.balance < 0 ? `-${Math.abs(user.balance).toFixed(2)} TL` : `${user.balance.toFixed(2)} TL`}
                         </span>
                     </div>
                     {user.balance < 0 && (
                         <p className="balance-debt-text">
-                            Total debt: <strong>${Math.abs(user.balance).toFixed(2)}</strong>
+                            Toplam borç: <strong>{Math.abs(user.balance).toFixed(2)} TL</strong>
                         </p>
                     )}
                     <div className="payment-form">
@@ -246,9 +246,9 @@ const MyAccount = () => {
                             max={user.balance < 0 ? Math.abs(user.balance) : 0}
                             value={paymentAmount}
                             onChange={(v) => setPaymentAmount(v || 0)}
-                            prefix={<DollarOutlined />}
+                            prefix="₺"
                             style={{ flex: 1 }}
-                            placeholder="Payment amount"
+                            placeholder="Ödeme tutarı"
                             type="number"
                             disabled={user.balance >= 0}
                         />
@@ -257,7 +257,7 @@ const MyAccount = () => {
                             disabled={paymentLoading || paymentAmount <= 0 || user.balance >= 0}
                             onClick={openPaymentModal}
                         >
-                            <DollarOutlined /> Make Payment
+                            <span style={{ marginRight: 8 }}>₺</span> Ödeme Yap
                         </button>
                     </div>
                 </div>
@@ -265,11 +265,11 @@ const MyAccount = () => {
 
             {/* Order History */}
             <Title level={3} style={{ color: '#fff', marginTop: 28, marginBottom: 16 }}>
-                Order History
+                Sipariş Geçmişi
             </Title>
 
             {orders.length === 0 ? (
-                <Empty description="You have no orders yet." />
+                <Empty description="Henüz siparişiniz bulunmuyor." />
             ) : (
                 <div className="order-history">
                     {Object.entries(groupedByDate).map(([date, dateOrders]) => (
@@ -296,15 +296,15 @@ const MyAccount = () => {
                                                     {order.product?.name || `Product #${order.productId}`}
                                                 </span>
                                                 <span className="order-card-qty">
-                                                    Qty: {order.quantity}
+                                                    Adet: {order.quantity}
                                                     {order.deliveredQuantity > 0 && order.deliveredQuantity !== order.quantity && (
-                                                        <span className="delivered-qty"> (Delivered: {order.deliveredQuantity})</span>
+                                                        <span className="delivered-qty"> (Teslim: {order.deliveredQuantity})</span>
                                                     )}
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="order-card-right">
-                                            <span className="order-card-price">${order.totalPrice}</span>
+                                            <span className="order-card-price">{order.totalPrice} TL</span>
                                             {getStatusTag(order.status)}
                                         </div>
 
@@ -314,7 +314,7 @@ const MyAccount = () => {
                                                 const stepOrder = ['Pending', 'Shipped', 'Delivered'];
                                                 const currentIdx = stepOrder.indexOf(order.status === 'PartialDelivered' ? 'Delivered' : order.status);
                                                 const isActive = idx <= currentIdx;
-                                                const stepLabels = { Pending: 'Pending', Shipped: 'Shipped', Delivered: 'Delivered' };
+                                                const stepLabels = { Pending: 'Beklemede', Shipped: 'Kargoda', Delivered: 'Teslim Edildi' };
                                                 return (
                                                     <div key={step} className={`timeline-step ${isActive ? 'active' : ''}`}>
                                                         <div className="timeline-dot" />
@@ -334,12 +334,12 @@ const MyAccount = () => {
 
             {/* Payment Modal */}
             <Modal
-                title={<span><CreditCardOutlined /> Make Payment</span>}
+                title={<span><CreditCardOutlined /> Ödeme Yap</span>}
                 open={isPaymentModalVisible}
                 onOk={handleConfirmPayment}
                 onCancel={() => setIsPaymentModalVisible(false)}
-                okText={`Pay ($${paymentAmount})`}
-                cancelText="Cancel"
+                okText={`Öde (${paymentAmount} TL)`}
+                cancelText="İptal"
                 confirmLoading={paymentLoading}
                 okButtonProps={{ disabled: !isFormValid, className: 'payment-modal-pay-btn' }}
             >
@@ -349,18 +349,18 @@ const MyAccount = () => {
                         <div className="payment-modal-number">{displayCardNumber()}</div>
                         <div className="payment-modal-bottom">
                             <div className="payment-modal-holder">
-                                <span>Cardholder</span>
-                                {cardHolder || 'FULL NAME'}
+                                <span>Kart Sahibi</span>
+                                {cardHolder || 'AD SOYAD'}
                             </div>
                             <div className="payment-modal-expiry">
-                                <span>Expires</span>
-                                {expiry || 'MM/YY'}
+                                <span>Son Kullanma</span>
+                                {expiry || 'AA/YY'}
                             </div>
                         </div>
                     </div>
 
                     <div className="payment-modal-group">
-                        <label>Card Number</label>
+                        <label>Kart Numarası</label>
                         <input
                             className="payment-modal-input"
                             type="text"
@@ -372,11 +372,11 @@ const MyAccount = () => {
                     </div>
 
                     <div className="payment-modal-group">
-                        <label>Cardholder</label>
+                        <label>Kart Sahibi</label>
                         <input
                             className="payment-modal-input"
                             type="text"
-                            placeholder="Your Full Name"
+                            placeholder="Ad Soyadınız"
                             value={cardHolder}
                             onChange={(e) => setCardHolder(e.target.value)}
                         />
@@ -384,11 +384,11 @@ const MyAccount = () => {
 
                     <div className="payment-modal-row">
                         <div className="payment-modal-group" style={{ flex: 1 }}>
-                            <label>Expiration Date</label>
+                            <label>Son Kullanma Tarihi</label>
                             <input
                                 className="payment-modal-input"
                                 type="text"
-                                placeholder="MM/YY"
+                                placeholder="AA/YY"
                                 value={expiry}
                                 onChange={handleExpiry}
                                 maxLength={5}
@@ -408,7 +408,7 @@ const MyAccount = () => {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: '#888', marginTop: 10 }}>
-                        <LockOutlined /> Secure Payment Infrastructure
+                        <LockOutlined /> Güvenli Ödeme Altyapısı
                     </div>
                 </div>
             </Modal>

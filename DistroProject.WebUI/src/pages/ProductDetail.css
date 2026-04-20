@@ -149,6 +149,21 @@
     color: #ff4d4f;
 }
 
+.meta-value.stock-low {
+    color: #faad14;
+}
+
+.meta-value.stock-critical {
+    color: #ff7a45;
+    animation: pulse-warn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-warn {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.65; }
+}
+
+
 /* Cart Section */
 .product-detail-cart-section {
     display: flex;

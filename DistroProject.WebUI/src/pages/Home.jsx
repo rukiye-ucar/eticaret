@@ -8,25 +8,25 @@ const { Title, Paragraph } = Typography;
 const categories = [
     {
         id: 1,
-        title: 'Sensors',
-        categoryParam: 'Sensors',
-        description: 'Industry-grade sensors engineered for precision. From depth perception to environmental monitoring — we deliver data you can trust.',
+        title: 'Sensörler',
+        categoryParam: 'Sensörler',
+        description: 'Hassasiyet için tasarlanmış endüstriyel sınıf sensörler. Derinlik algılamadan çevresel izlemeye kadar güvenebileceğiniz veriler sunuyoruz.',
         image: depthSensor,
         gradient: 'linear-gradient(135deg, #8ba8cc 0%, #050b14 100%)'
     },
     {
         id: 2,
-        title: 'Mechanical',
-        categoryParam: 'Mechanical',
-        description: 'Built to endure. Our mechanical components combine robust materials with flawless tolerances — because performance demands reliability.',
+        title: 'Mekanik',
+        categoryParam: 'Mekanik',
+        description: 'Dayanıklılık için üretildi. Mekanik bileşenlerimiz sağlam malzemeleri kusursuz toleranslarla birleştirir, çünkü performans güvenilirlik gerektirir.',
         image: depthSensor,
         gradient: 'linear-gradient(135deg, #050b14 0%, #8ba8cc 100%)'
     },
     {
         id: 3,
-        title: 'Electronics',
-        categoryParam: 'Electronics',
-        description: 'Cutting-edge electronics for every application. Sourced from top-tier manufacturers and rigorously tested to power your most demanding projects.',
+        title: 'Elektronik',
+        categoryParam: 'Elektronik',
+        description: 'Her uygulama için son teknoloji elektronikler. En üst düzey üreticilerden temin edilen ve en zorlu projelerinizi güçlendirmek için titizlikle test edilmiş ürünler.',
         image: depthSensor,
         gradient: 'linear-gradient(135deg, #8ba8cc 0%, #050b14 100%)'
     }

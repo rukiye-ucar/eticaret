@@ -86,9 +86,9 @@ const Header = () => {
 
     const navLinks = (
         <>
-            <Button type="link" onClick={() => { navigate('/'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Home</Button>
-            <Button type="link" onClick={() => { navigate('/products'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Products</Button>
-            <Button type="link" onClick={() => { navigate('/about'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>About Us</Button>
+            <Button type="link" onClick={() => { navigate('/'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Ana Sayfa</Button>
+            <Button type="link" onClick={() => { navigate('/products'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Ürünler</Button>
+            <Button type="link" onClick={() => { navigate('/about'); setMobileMenuOpen(false); }} style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Hakkımızda</Button>
 
             {/* Role Based Links */}
             {isAuthenticated && user?.role === 'Admin' && (
@@ -98,7 +98,7 @@ const Header = () => {
                     onClick={() => { navigate('/admin/orders'); setMobileMenuOpen(false); }}
                     style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
                 >
-                    Admin Panel
+                    Admin Paneli
                 </Button>
             )}
 
@@ -109,7 +109,7 @@ const Header = () => {
                     onClick={() => { navigate('/driver'); setMobileMenuOpen(false); }}
                     style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
                 >
-                    Driver Panel
+                    Sürücü Paneli
                 </Button>
             )}
 
@@ -120,7 +120,7 @@ const Header = () => {
                     onClick={() => { navigate('/account'); setMobileMenuOpen(false); }}
                     style={{ color: '#f9b17a', textShadow: '0 2px 4px rgba(0,0,0,0.5)', fontWeight: 'bold' }}
                 >
-                    My Account
+                    Hesabım
                 </Button>
             )}
 
@@ -131,7 +131,7 @@ const Header = () => {
                     onClick={handleLogout}
                     style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                 >
-                    Log Out
+                    Çıkış Yap
                 </Button>
             ) : (
                 <Button
@@ -140,7 +140,7 @@ const Header = () => {
                     onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
                     style={{ color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                 >
-                    Login / Register
+                    Giriş / Kayıt
                 </Button>
             )}
         </>
@@ -173,7 +173,7 @@ const Header = () => {
                         <SearchOutlined className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder="Ürün ara..."
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             onFocus={() => searchText.length >= 2 && setShowDropdown(true)}
@@ -202,7 +202,7 @@ const Header = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div className="search-no-result">No results found</div>
+                                <div className="search-no-result">Sonuç bulunamadı</div>
                             )}
                         </div>
                     )}
@@ -242,7 +242,7 @@ const Header = () => {
                         <SearchOutlined className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder="Ürün ara..."
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             className="header-search-input"
@@ -270,7 +270,7 @@ const Header = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div className="search-no-result">No results found</div>
+                                <div className="search-no-result">Sonuç bulunamadı</div>
                             )}
                         </div>
                     )}

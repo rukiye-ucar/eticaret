@@ -61,7 +61,7 @@ const CartPage = () => {
                     />
                     <div className="cart-item-info">
                         <div className="cart-item-name" title={product.name}>{product.name}</div>
-                        <div className="cart-item-price">${product.price}</div>
+                        <div className="cart-item-price">{product.price} TL</div>
                     </div>
 
                     <div className="cart-item-quantity">
@@ -79,7 +79,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="cart-item-subtotal">
-                        ${(product.price * quantity).toFixed(2)}
+                        {(product.price * quantity).toFixed(2)} TL
                     </div>
 
                     <Button
@@ -92,7 +92,7 @@ const CartPage = () => {
 
             <div className="cart-summary">
                 <span className="cart-total-label">Total:</span>
-                <span className="cart-total-price">${totalPrice.toFixed(2)}</span>
+                <span className="cart-total-price">{totalPrice.toFixed(2)} TL</span>
                 <button
                     className="cart-checkout-btn"
                     onClick={() => navigate('/checkout')}

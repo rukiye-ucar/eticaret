@@ -104,7 +104,7 @@ const ProductDetail = () => {
                     </Title>
 
                     <div className="product-detail-price-row">
-                        <span className="product-detail-price">${product.price}</span>
+                        <span className="product-detail-price">{product.price} TL</span>
                         <span className="product-detail-unit">/ {product.unitType}</span>
                     </div>
 
@@ -113,8 +113,20 @@ const ProductDetail = () => {
                     <div className="product-detail-meta">
                         <div className="meta-item">
                             <span className="meta-label">Stok</span>
-                            <span className={`meta-value ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                                {product.stock > 0 ? `${product.stock} adet mevcut` : 'Stokta yok'}
+                            <span className={`meta-value ${
+                                product.stock === 0 ? 'out-of-stock' :
+                                product.stock <= 2 ? 'stock-critical' :
+                                product.stock <= 5 ? 'stock-low' :
+                                'in-stock'
+                            }`}>
+                                {product.stock === 0
+                                    ? 'Stokta yok'
+                                    : product.stock <= 2
+                                    ? '⚠️ Acele et! Son birkaç ürün'
+                                    : product.stock <= 5
+                                    ? '⏳ Stoklar tükenmek üzere'
+                                    : 'Stokta mevcut'
+                                }
                             </span>
                         </div>
                         <div className="meta-item">
@@ -157,7 +169,7 @@ const ProductDetail = () => {
                             disabled={product.stock <= 0}
                             block
                         >
-                            Sepete Ekle — ${(product.price * quantity).toFixed(2)}
+                            Sepete Ekle — {(product.price * quantity).toFixed(2)} TL
                         </Button>
                     </div>
                 </div>

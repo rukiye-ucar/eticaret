@@ -40,17 +40,17 @@ const AuthPage = () => {
             if (res.ok) {
                 const data = await res.json();
                 if (login(data.token)) {
-                    message.success('Welcome back!');
+                    message.success('Hoş geldiniz!');
                     const payload = JSON.parse(atob(data.token.split('.')[1]));
                     navigate(payload.role === 'Admin' ? '/admin/orders' : '/');
                 } else {
-                    message.error('Login failed, invalid token.');
+                    message.error('Giriş başarısız, geçersiz token.');
                 }
             } else {
-                message.error('Invalid email or password.');
+                message.error('E-posta veya şifre hatalı.');
             }
         } catch {
-            message.error('An error occurred during login.');
+            message.error('Giriş sırasında bir hata oluştu.');
         } finally {
             setLoading(false);
         }
@@ -65,14 +65,14 @@ const AuthPage = () => {
                 body: JSON.stringify({ username: values.username, email: values.email, password: values.password }),
             });
             if (res.ok) {
-                message.success('Registration successful! Please sign in.');
+                message.success('Kayıt başarılı! Lütfen giriş yapın.');
                 switchMode('login');
             } else {
                 const data = await res.json();
-                message.error(data.message || 'Registration failed.');
+                message.error(data.message || 'Kayıt başarısız.');
             }
         } catch {
-            message.error('An error occurred during registration.');
+            message.error('Kayıt sırasında bir hata oluştu.');
         } finally {
             setLoading(false);
         }
@@ -94,13 +94,13 @@ const AuthPage = () => {
                         className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
                         onClick={() => switchMode('login')}
                     >
-                        Sign In
+                        Giriş Yap
                     </button>
                     <button
                         className={`auth-tab ${mode === 'register' ? 'active' : ''}`}
                         onClick={() => switchMode('register')}
                     >
-                        Sign Up
+                        Kayıt Ol
                     </button>
                     <div className={`auth-tab-indicator ${mode === 'register' ? 'right' : 'left'}`} />
                 </div>
@@ -110,63 +110,63 @@ const AuthPage = () => {
                     {mode === 'login' ? (
                         <Form key="login" name="login_form" onFinish={onLoginFinish} layout="vertical" size="large">
                             <div className="auth-greeting">
-                                <h2>Welcome back 👋</h2>
-                                <p>Sign in to continue shopping</p>
+                                <h2>Hoş geldiniz</h2>
+                                <p>Alışverişe devam etmek için giriş yapın</p>
                             </div>
                             <Form.Item
                                 name="email"
-                                rules={[{ required: true, message: 'Email is required!' }, { type: 'email', message: 'Enter a valid email!' }]}
+                                rules={[{ required: true, message: 'E-posta zorunludur!' }, { type: 'email', message: 'Geçerli bir e-posta girin!' }]}
                             >
-                                <Input prefix={<MailOutlined className="auth-input-icon" />} placeholder="Email address" className="auth-input" />
+                                <Input prefix={<MailOutlined className="auth-input-icon" />} placeholder="E-posta adresi" className="auth-input" />
                             </Form.Item>
                             <Form.Item
                                 name="password"
-                                rules={[{ required: true, message: 'Password is required!' }]}
+                                rules={[{ required: true, message: 'Şifre zorunludur!' }]}
                             >
-                                <Input.Password prefix={<LockOutlined className="auth-input-icon" />} placeholder="Password" className="auth-input" />
+                                <Input.Password prefix={<LockOutlined className="auth-input-icon" />} placeholder="Şifre" className="auth-input" />
                             </Form.Item>
                             <Form.Item style={{ marginBottom: 0 }}>
                                 <Button className="auth-submit-btn" htmlType="submit" loading={loading} block>
-                                    Sign In
+                                    Giriş Yap
                                 </Button>
                             </Form.Item>
                             <p className="auth-switch-text">
-                                Don't have an account?{' '}
-                                <span onClick={() => switchMode('register')}>Sign up</span>
+                                Hesabınız yok mu?{' '}
+                                <span onClick={() => switchMode('register')}>Kayıt olun</span>
                             </p>
                         </Form>
                     ) : (
                         <Form key="register" name="register_form" onFinish={onRegisterFinish} layout="vertical" size="large">
                             <div className="auth-greeting">
-                                <h2>Create account ✨</h2>
-                                <p>Join us and start shopping today</p>
+                                <h2>Hesap Oluştur</h2>
+                                <p>Bize katılın ve hemen alışverişe başlayın</p>
                             </div>
                             <Form.Item
                                 name="username"
-                                rules={[{ required: true, message: 'Username is required!' }]}
+                                rules={[{ required: true, message: 'Kullanıcı adı zorunludur!' }]}
                             >
-                                <Input prefix={<UserOutlined className="auth-input-icon" />} placeholder="Username" className="auth-input" />
+                                <Input prefix={<UserOutlined className="auth-input-icon" />} placeholder="Kullanıcı Adı" className="auth-input" />
                             </Form.Item>
                             <Form.Item
                                 name="email"
-                                rules={[{ required: true, message: 'Email is required!' }, { type: 'email', message: 'Enter a valid email!' }]}
+                                rules={[{ required: true, message: 'E-posta zorunludur!' }, { type: 'email', message: 'Geçerli bir e-posta girin!' }]}
                             >
-                                <Input prefix={<MailOutlined className="auth-input-icon" />} placeholder="Email address" className="auth-input" />
+                                <Input prefix={<MailOutlined className="auth-input-icon" />} placeholder="E-posta adresi" className="auth-input" />
                             </Form.Item>
                             <Form.Item
                                 name="password"
-                                rules={[{ required: true, message: 'Password is required!' }]}
+                                rules={[{ required: true, message: 'Şifre zorunludur!' }]}
                             >
-                                <Input.Password prefix={<LockOutlined className="auth-input-icon" />} placeholder="Password" className="auth-input" />
+                                <Input.Password prefix={<LockOutlined className="auth-input-icon" />} placeholder="Şifre" className="auth-input" />
                             </Form.Item>
                             <Form.Item style={{ marginBottom: 0 }}>
                                 <Button className="auth-submit-btn" htmlType="submit" loading={loading} block>
-                                    Create Account
+                                    Kayıt Ol
                                 </Button>
                             </Form.Item>
                             <p className="auth-switch-text">
-                                Already have an account?{' '}
-                                <span onClick={() => switchMode('login')}>Sign in</span>
+                                Zaten hesabınız var mı?{' '}
+                                <span onClick={() => switchMode('login')}>Giriş yapın</span>
                             </p>
                         </Form>
                     )}

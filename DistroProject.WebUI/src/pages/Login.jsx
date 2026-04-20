@@ -36,7 +36,7 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json();
                 if (login(data.token)) {
-                    message.success('Login successful!');
+                    message.success('Giriş başarılı!');
                     const payload = JSON.parse(atob(data.token.split('.')[1]));
                     if (payload.role === 'Admin') {
                         navigate('/admin/orders');
@@ -46,14 +46,14 @@ const Login = () => {
                         navigate('/');
                     }
                 } else {
-                    message.error('Login failed during token processing');
+                    message.error('Token işleme sırasında giriş başarısız oldu');
                 }
             } else {
-                message.error('Invalid email or password');
+                message.error('E-posta veya şifre hatalı');
             }
         } catch (error) {
             console.error('Login error:', error);
-            message.error('An error occurred during login');
+            message.error('Giriş sırasında bir hata oluştu');
         } finally {
             setLoading(false);
         }
@@ -80,8 +80,8 @@ const Login = () => {
                 backgroundColor: 'rgba(255, 255, 255, 0.9)'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={2} style={{ color: '#2d2250' }}>Login</Title>
-                    <p style={{ color: '#555' }}>Welcome back! Please login to your account.</p>
+                    <Title level={2} style={{ color: '#2d2250' }}>Giriş Yap</Title>
+                    <p style={{ color: '#555' }}>Hoş geldiniz! Lütfen hesabınıza giriş yapın.</p>
                 </div>
                 <Form
                     name="login_form"
@@ -92,24 +92,24 @@ const Login = () => {
                 >
                     <Form.Item
                         name="email"
-                        rules={[{ required: true, message: 'Please input your Email!' }, { type: 'email', message: 'Please enter a valid email!' }]}
+                        rules={[{ required: true, message: 'Lütfen e-posta adresinizi girin!' }, { type: 'email', message: 'Geçerli bir e-posta girin!' }]}
                     >
                         <Input prefix={<UserOutlined />} placeholder="Email" />
                     </Form.Item>
                     <Form.Item
                         name="password"
-                        rules={[{ required: true, message: 'Please input your Password!' }]}
+                        rules={[{ required: true, message: 'Lütfen şifrenizi girin!' }]}
                     >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+                        <Input.Password prefix={<LockOutlined />} placeholder="Şifre" />
                     </Form.Item>
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block loading={loading} style={{ backgroundColor: '#f9b17a', borderColor: '#f9b17a', color: '#2d2250', fontWeight: 'bold' }}>
-                            Log in
+                            Giriş Yap
                         </Button>
                     </Form.Item>
                     <div style={{ textAlign: 'center' }}>
-                        Don't have an account? <Link to="/register" style={{ color: '#2d2250', fontWeight: 'bold' }}>Register here</Link>
+                        Hesabınız yok mu? <Link to="/register" style={{ color: '#2d2250', fontWeight: 'bold' }}>Kayıt olun</Link>
                     </div>
                 </Form>
             </Card>

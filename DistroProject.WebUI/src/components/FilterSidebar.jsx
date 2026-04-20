@@ -21,7 +21,7 @@ const FilterSidebar = ({
 
             {/* ── Categories ── */}
             <div className="filter-section">
-                <div className="filter-title">Categories</div>
+                <div className="filter-title">Kategoriler</div>
                 {categories.length > 0 ? (
                     <Checkbox.Group
                         options={categories}
@@ -31,14 +31,14 @@ const FilterSidebar = ({
                     />
                 ) : (
                     <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem' }}>
-                        No categories found
+                        Kategori bulunamadı
                     </Text>
                 )}
             </div>
 
             {/* ── Price Range ── */}
             <div className="filter-section">
-                <div className="filter-title">Price Range</div>
+                <div className="filter-title">Fiyat Aralığı</div>
                 <Slider
                     range
                     min={0}
@@ -53,8 +53,8 @@ const FilterSidebar = ({
                     ]}
                 />
                 <div className="price-range-values">
-                    <span className="price-badge">${priceRange[0]}</span>
-                    <span className="price-badge">${priceRange[1]}</span>
+                    <span className="price-badge">{priceRange[0]} TL</span>
+                    <span className="price-badge">{priceRange[1]} TL</span>
                 </div>
             </div>
 
@@ -65,7 +65,7 @@ const FilterSidebar = ({
                     icon={<ClearOutlined />}
                     onClick={onClearFilters}
                 >
-                    Clear All Filters
+                    Filtreleri Temizle
                 </Button>
             )}
         </div>

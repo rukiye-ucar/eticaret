@@ -27,15 +27,15 @@ const Register = () => {
             });
 
             if (response.ok) {
-                message.success('Registration successful! Please login.');
+                message.success('Kayıt başarılı! Lütfen giriş yapın.');
                 navigate('/login');
             } else {
                 const data = await response.json();
-                message.error(data.message || 'Registration failed');
+                message.error(data.message || 'Kayıt başarısız oldu');
             }
         } catch (error) {
             console.error('Registration error:', error);
-            message.error('An error occurred during registration');
+            message.error('Kayıt sırasında bir hata oluştu');
         } finally {
             setLoading(false);
         }
@@ -62,8 +62,8 @@ const Register = () => {
                 backgroundColor: 'rgba(255, 255, 255, 0.9)' // Fallback / Blend
             }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={2} style={{ color: '#2d2250' }}>Register</Title>
-                    <p style={{ color: '#555' }}>Create your account to get started.</p>
+                    <Title level={2} style={{ color: '#2d2250' }}>Kayıt Ol</Title>
+                    <p style={{ color: '#555' }}>Hesabınızı oluşturun ve alışverişe başlayın.</p>
                 </div>
                 <Form
                     name="register_form"
@@ -73,30 +73,30 @@ const Register = () => {
                 >
                     <Form.Item
                         name="username"
-                        rules={[{ required: true, message: 'Please input your Username!' }]}
+                        rules={[{ required: true, message: 'Lütfen kullanıcı adınızı girin!' }]}
                     >
-                        <Input prefix={<UserOutlined />} placeholder="Username" />
+                        <Input prefix={<UserOutlined />} placeholder="Kullanıcı Adı" />
                     </Form.Item>
                     <Form.Item
                         name="email"
-                        rules={[{ required: true, message: 'Please input your Email!' }, { type: 'email', message: 'Please enter a valid email!' }]}
+                        rules={[{ required: true, message: 'Lütfen e-posta adresinizi girin!' }, { type: 'email', message: 'Geçerli bir e-posta girin!' }]}
                     >
                         <Input prefix={<MailOutlined />} placeholder="Email" />
                     </Form.Item>
                     <Form.Item
                         name="password"
-                        rules={[{ required: true, message: 'Please input your Password!' }]}
+                        rules={[{ required: true, message: 'Lütfen şifrenizi girin!' }]}
                     >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+                        <Input.Password prefix={<LockOutlined />} placeholder="Şifre" />
                     </Form.Item>
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block loading={loading} style={{ backgroundColor: '#f9b17a', borderColor: '#f9b17a', color: '#2d2250', fontWeight: 'bold' }}>
-                            Register
+                            Kayıt Ol
                         </Button>
                     </Form.Item>
                     <div style={{ textAlign: 'center' }}>
-                        Already have an account? <Link to="/login" style={{ color: '#2d2250', fontWeight: 'bold' }}>Login here</Link>
+                        Zaten hesabınız var mı? <Link to="/login" style={{ color: '#2d2250', fontWeight: 'bold' }}>Giriş yapın</Link>
                     </div>
                 </Form>
             </Card>

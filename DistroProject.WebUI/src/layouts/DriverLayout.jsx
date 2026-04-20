@@ -36,13 +36,13 @@ const DriverLayout = () => {
         {
             key: '/driver',
             icon: <CarOutlined />,
-            label: 'My Deliveries',
+            label: 'Teslimatlarım',
             onClick: () => { navigate('/driver'); setDrawerOpen(false); },
         },
         {
             key: 'logout',
             icon: <LogoutOutlined />,
-            label: 'Log Out',
+            label: 'Çıkış Yap',
             onClick: handleLogout,
             danger: true,
         },
@@ -61,7 +61,7 @@ const DriverLayout = () => {
                         borderBottom: '1px solid rgba(255,255,255,0.1)',
                     }}>
                         <Title level={4} style={{ margin: 0, color: '#f9b17a', letterSpacing: 1 }}>
-                            🚚 Driver
+                            🚚 Şoför
                         </Title>
                     </div>
                     <Menu
@@ -94,7 +94,7 @@ const DriverLayout = () => {
                 <Drawer
                     title={
                         <span style={{ color: '#f9b17a', fontWeight: 700 }}>
-                            🚚 Driver Panel
+                            🚚 Şoför Paneli
                         </span>
                     }
                     placement="left"

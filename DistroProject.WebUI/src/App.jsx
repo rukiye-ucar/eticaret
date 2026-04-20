@@ -23,6 +23,7 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import MyAccount from './pages/MyAccount';
 import About from './pages/About';
 import bgImage from './assets/arkaplan.jpg';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 const ConsumerLayout = () => (
   <div className="app-container">
@@ -93,6 +94,7 @@ function App() {
                 <Route path="finance" element={<FinanceManagement />} />
               </Route>
             </Routes>
+            <PWAUpdatePrompt />
           </CartProvider>
         </AuthProvider>
       </AntdApp>

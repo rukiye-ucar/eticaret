@@ -20,12 +20,12 @@ const ProductCard = ({ product }) => {
     const handleAddToCart = (e) => {
         e.stopPropagation();
         if (!isAuthenticated) {
-            message.warning('Please log in to add items to your cart.');
+            message.warning('Sepete eklemek için lütfen giriş yapın.');
             navigate('/login');
             return;
         }
         addToCart(product);
-        message.success(`${product.name} added to cart!`);
+        message.success(`${product.name} sepete eklendi!`);
     };
 
     const handleCardClick = () => {
@@ -43,7 +43,7 @@ const ProductCard = ({ product }) => {
                     alt={product.name}
                     className="product-image"
                 />
-                {isOutOfStock && <div className="out-of-stock-badge">OUT OF STOCK</div>}
+                {isOutOfStock && <div className="out-of-stock-badge">STOKTA YOK</div>}
             </div>
 
             {/* Product Info */}
@@ -53,7 +53,7 @@ const ProductCard = ({ product }) => {
                         {product.name}
                     </div>
                     <div className="product-price">
-                        ${product.price}
+                        {product.price} TL
                     </div>
                 </div>
 
@@ -63,7 +63,7 @@ const ProductCard = ({ product }) => {
                     onClick={handleAddToCart}
                     disabled={isOutOfStock}
                 >
-                    {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                    {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
                 </Button>
             </div>
         </div>

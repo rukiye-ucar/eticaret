@@ -34,7 +34,7 @@ const DriverManagement = () => {
             if (!groups[dId]) {
                 groups[dId] = {
                     driverId: dId,
-                    driverName: order.driver?.name || order.driver?.email || `Driver #${dId}`,
+                    driverName: order.driver?.name || order.driver?.email || `Şoför #${dId}`,
                     customers: {},
                     totalOrders: 0,
                     deliveredCount: 0,
@@ -52,7 +52,7 @@ const DriverManagement = () => {
             if (!group.customers[cId]) {
                 group.customers[cId] = {
                     customerId: cId,
-                    customerName: order.customer?.name || order.customer?.email || `Customer #${cId}`,
+                    customerName: order.customer?.name || order.customer?.email || `Müşteri #${cId}`,
                     orders: [],
                 };
             }
@@ -64,11 +64,11 @@ const DriverManagement = () => {
 
     const getStatusTag = (status) => {
         const map = {
-            Pending: { color: 'orange', text: 'Pending' },
-            Approved: { color: 'blue', text: 'Approved' },
-            Shipped: { color: 'cyan', text: 'Shipped' },
-            Delivered: { color: 'green', text: 'Delivered' },
-            PartialDelivered: { color: 'purple', text: 'Partial' },
+            Pending: { color: 'orange', text: 'Beklemede' },
+            Approved: { color: 'blue', text: 'Onaylandı' },
+            Shipped: { color: 'cyan', text: 'Kargoda' },
+            Delivered: { color: 'green', text: 'Teslim Edildi' },
+            PartialDelivered: { color: 'purple', text: 'Kısmi' },
         };
         const info = map[status] || { color: 'default', text: status };
         return <Tag color={info.color}>{info.text}</Tag>;
@@ -89,9 +89,9 @@ const DriverManagement = () => {
             <div className="driver-mgmt-header">
                 <Title level={2} style={{ margin: 0, color: '#1a1a2e' }}>
                     <CarOutlined style={{ marginRight: 12, color: '#f9b17a' }} />
-                    Driver Management
+                    Şoför Yönetimi
                 </Title>
-                <Text style={{ color: '#aab8d0' }}>View driver deliveries grouped by customer</Text>
+                <Text style={{ color: '#aab8d0' }}>Müşteriye göre gruplandırılmış şoför teslimatlarını görüntüle</Text>
             </div>
 
             {/* Stats */}
@@ -100,27 +100,27 @@ const DriverManagement = () => {
                     <CarOutlined className="dm-stat-icon" />
                     <div>
                         <h3>{driverGroups.length}</h3>
-                        <span>Active Drivers</span>
+                        <span>Aktif Şoförler</span>
                     </div>
                 </div>
                 <div className="dm-stat-card">
                     <ShoppingOutlined className="dm-stat-icon delivered" />
                     <div>
                         <h3>{driverGroups.reduce((s, d) => s + d.totalOrders, 0)}</h3>
-                        <span>Total Orders</span>
+                        <span>Toplam Sipariş</span>
                     </div>
                 </div>
                 <div className="dm-stat-card">
                     <CheckCircleOutlined className="dm-stat-icon success" />
                     <div>
                         <h3>{driverGroups.reduce((s, d) => s + d.deliveredCount, 0)}</h3>
-                        <span>Delivered</span>
+                        <span>Teslim Edildi</span>
                     </div>
                 </div>
             </div>
 
             {driverGroups.length === 0 ? (
-                <Empty description="No orders assigned to any driver yet." />
+                <Empty description="Henüz bir şoföre atanmış sipariş bulunmuyor." />
             ) : (
                 <Collapse
                     className="driver-collapse"
@@ -134,10 +134,10 @@ const DriverManagement = () => {
                                     <span className="driver-name">{driver.driverName}</span>
                                 </div>
                                 <div className="driver-badges">
-                                    <Tag color="blue">{driver.totalOrders} orders</Tag>
-                                    <Tag color="cyan">{driver.pendingCount} pending</Tag>
-                                    <Tag color="green">{driver.deliveredCount} delivered</Tag>
-                                    <Tag color="orange">{driver.customerList.length} customers</Tag>
+                                    <Tag color="blue">{driver.totalOrders} sipariş</Tag>
+                                    <Tag color="cyan">{driver.pendingCount} bekleyen</Tag>
+                                    <Tag color="green">{driver.deliveredCount} teslim edildi</Tag>
+                                    <Tag color="orange">{driver.customerList.length} müşteri</Tag>
                                 </div>
                             </div>
                         ),
@@ -148,7 +148,7 @@ const DriverManagement = () => {
                                         <div className="customer-header">
                                             <UserOutlined style={{ color: '#f9b17a' }} />
                                             <span className="customer-name">{customer.customerName}</span>
-                                            <Tag color="geekblue">{customer.orders.length} items</Tag>
+                                            <Tag color="geekblue">{customer.orders.length} parça</Tag>
                                         </div>
                                         <div className="customer-orders">
                                             {customer.orders.map(order => (
@@ -165,10 +165,10 @@ const DriverManagement = () => {
                                                         )}
                                                         <div className="order-product-info">
                                                             <span className="order-product-name">
-                                                                {order.product?.name || `Product #${order.productId}`}
+                                                                {order.product?.name || `Ürün #${order.productId}`}
                                                             </span>
                                                             <span className="order-product-qty">
-                                                                Qty: {order.deliveredQuantity > 0
+                                                                Adet: {order.deliveredQuantity > 0
                                                                     ? `${order.deliveredQuantity}/${order.quantity}`
                                                                     : order.quantity}
                                                             </span>

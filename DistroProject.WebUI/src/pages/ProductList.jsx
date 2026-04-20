@@ -97,7 +97,7 @@ const ProductList = () => {
                 onClick={() => setFilterDrawerOpen(true)}
                 icon={<FilterOutlined />}
             >
-                Filters{hasActiveFilters ? ` (${selectedCategories.length > 0 ? selectedCategories.length : ''}${selectedCategories.length > 0 && priceRange[0] > 0 || priceRange[1] < maxPrice ? '+' : ''} active)` : ''}
+                Filtreler{hasActiveFilters ? ` (${selectedCategories.length > 0 ? selectedCategories.length : ''}${selectedCategories.length > 0 && priceRange[0] > 0 || priceRange[1] < maxPrice ? '+' : ''} aktif)` : ''}
             </Button>
 
             <div className="products-layout">
@@ -110,10 +110,10 @@ const ProductList = () => {
                 <div>
                     {/* Header Row */}
                     <div className="products-header-row">
-                        <h2 className="products-title">Products</h2>
+                        <h2 className="products-title">Ürünler</h2>
                         {!loading && (
                             <span className="products-count">
-                                {filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'}
+                                {filteredProducts.length} {filteredProducts.length === 1 ? 'ürün' : 'ürün'}
                             </span>
                         )}
                     </div>
@@ -132,10 +132,10 @@ const ProductList = () => {
                             <div className="products-empty">
                                 <span className="products-empty-icon">🔍</span>
                                 <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontSize: '1rem' }}>
-                                    No products found
+                                    Ürün bulunamadı
                                 </span>
                                 <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>
-                                    Try adjusting your filters
+                                    Filtrelerinizi değiştirmeyi deneyin
                                 </span>
                                 {hasActiveFilters && (
                                     <Button
@@ -143,7 +143,7 @@ const ProductList = () => {
                                         onClick={handleClearFilters}
                                         style={{ color: '#f9b17a', marginTop: '4px' }}
                                     >
-                                        Clear all filters
+                                        Filtreleri temizle
                                     </Button>
                                 )}
                             </div>
@@ -157,13 +157,13 @@ const ProductList = () => {
                 title={
                     <span style={{ color: '#fff', fontWeight: 700, fontSize: '1rem' }}>
                         <FilterOutlined style={{ marginRight: 8, color: '#f9b17a' }} />
-                        Filters
+                        Filtreler
                     </span>
                 }
                 placement="left"
                 onClose={() => setFilterDrawerOpen(false)}
                 open={filterDrawerOpen}
-                width={300}
+                size={300}
                 styles={{
                     header: { background: '#1a1040', borderBottom: '1px solid rgba(249,177,122,0.15)' },
                     body: { background: '#1a1040', padding: '16px' },
@@ -185,7 +185,7 @@ const ProductList = () => {
                             color: '#1a0f36'
                         }}
                     >
-                        Show {filteredProducts.length} Results
+                        {filteredProducts.length} Sonucu Göster
                     </Button>
                 }
             >

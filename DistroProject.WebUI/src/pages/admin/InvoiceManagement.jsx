@@ -54,7 +54,7 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
 
     doc.setFontSize(13);
     doc.setTextColor(249, 177, 122);
-    doc.text('INVOICE', pageW / 2, 54, { align: 'center' });
+    doc.text('FATURA', pageW / 2, 54, { align: 'center' });
 
     doc.setDrawColor(249, 177, 122);
     doc.setLineWidth(0.5);
@@ -71,12 +71,12 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
     let y = 65;
 
     const metaLeft = [
-        ['Invoice No:', `#${group.invoiceNo}`],
-        ['Customer:', group.customerName],
+        ['Fatura No:', `#${group.invoiceNo}`],
+        ['Müsteri:', group.customerName],
     ];
     const metaRight = [
-        ['Date:', new Date(firstOrder.orderDate).toLocaleDateString('en-GB')],
-        ['Time:', new Date(firstOrder.orderDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })],
+        ['Tarih:', new Date(firstOrder.orderDate).toLocaleDateString('tr-TR')],
+        ['Saat:', new Date(firstOrder.orderDate).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })],
     ];
 
     metaLeft.forEach(([label, value]) => {
@@ -111,16 +111,16 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
         const unitPrice = o.quantity > 0 ? (o.totalPrice / o.quantity).toFixed(2) : o.totalPrice;
         return [
             idx,                                                           // used for image injection (hidden)
-            o.product?.name || `Product #${o.productId}`,
-            `$${unitPrice}`,
+            o.product?.name || `Urun #${o.productId}`,
+            `${unitPrice} TL`,
             String(o.quantity),
-            `$${o.totalPrice?.toFixed ? o.totalPrice.toFixed(2) : o.totalPrice}`,
+            `${o.totalPrice?.toFixed ? o.totalPrice.toFixed(2) : o.totalPrice} TL`,
         ];
     });
 
     autoTable(doc, {
         startY: y,
-        head: [['', 'Product', 'Unit Price', 'Qty', 'Total']],
+        head: [['', 'Urun', 'Birim Fiyat', 'Adet', 'Toplam']],
         body: tableBody,
         styles: { font: 'helvetica', fontSize: 10, cellPadding: 4 },
         headStyles: {
@@ -132,7 +132,7 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
         alternateRowStyles: { fillColor: [250, 248, 255] },
         columnStyles: {
             0: { cellWidth: 18 },           // image col
-            1: { cellWidth: 75 },
+            1: { cellWidth: 70 },
             2: { cellWidth: 30, halign: 'right' },
             3: { cellWidth: 20, halign: 'center' },
             4: { cellWidth: 30, halign: 'right' },
@@ -165,7 +165,7 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(45, 34, 80);
-    doc.text(`Grand Total: $${grandTotal.toFixed(2)}`, rightX, finalY, { align: 'right' });
+    doc.text(`Genel Toplam: ${grandTotal.toFixed(2)} TL`, rightX, finalY, { align: 'right' });
 
     // ── Footer ────────────────────────────────────────────────
     const footerY = doc.internal.pageSize.getHeight() - 18;
@@ -176,7 +176,7 @@ const generateGroupPDF = async (group, logoB64, action = 'download') => {
     doc.setFontSize(8);
     doc.setTextColor(130, 130, 130);
     doc.text(
-        `${COMPANY_NAME} — This document is auto-generated.`,
+        `${COMPANY_NAME} — Bu belge otomatik olarak olusturulmustur.`,
         pageW / 2, footerY, { align: 'center' }
     );
 
@@ -228,7 +228,7 @@ const InvoiceManagement = () => {
                     key,
                     invoiceNo: order.id,   // highest ID in session = invoice number
                     customerId: order.customerId,
-                    customerName: order.customer?.name || order.customer?.email || `Customer #${order.customerId}`,
+                    customerName: order.customer?.name || order.customer?.email || `Müsteri #${order.customerId}`,
                     sessionDate: order.orderDate,
                     orders: [],
                     grandTotal: 0,
@@ -286,8 +286,8 @@ const InvoiceManagement = () => {
                 <div className="inv-header-left">
                     <FileTextOutlined className="inv-header-icon" />
                     <div>
-                        <h2 className="inv-title">Invoices</h2>
-                        <p className="inv-subtitle">View or download PDF invoices for each purchase.</p>
+                        <h2 className="inv-title">Faturalar</h2>
+                        <p className="inv-subtitle">Her satın alma işlemi için PDF faturaları görüntüleyin veya indirin.</p>
                     </div>
                 </div>
                 <AutoComplete
@@ -296,7 +296,7 @@ const InvoiceManagement = () => {
                     value={search}
                     onChange={(val) => setSearch(val || '')}
                     onSelect={(val) => setSearch(val || '')}
-                    placeholder="Invoice no, customer name, product..."
+                    placeholder="Fatura no, müşteri adı, ürün..."
                     allowClear
                 >
                     <Input prefix={<SearchOutlined />} />
@@ -306,23 +306,23 @@ const InvoiceManagement = () => {
             {loading ? (
                 <div className="inv-spin-wrap"><Spin size="large" /></div>
             ) : filteredGroups.length === 0 ? (
-                <Empty description="No invoices found." />
+                <Empty description="Fatura bulunamadi." />
             ) : (
                 <div className="inv-grid">
                     {filteredGroups.map((group) => (
                         <div key={group.key} className="inv-card">
                             {/* Card Header */}
                             <div className="inv-card-header">
-                                <span className="inv-card-id">Invoice #{group.invoiceNo}</span>
-                                <span className="inv-item-count">{group.orders.length} item(s)</span>
+                                <span className="inv-card-id">Fatura #{group.invoiceNo}</span>
+                                <span className="inv-item-count">{group.orders.length} ürün</span>
                             </div>
 
                             {/* Customer + Date */}
                             <div className="inv-card-meta">
                                 <span className="inv-customer-name">{group.customerName}</span>
                                 <span className="inv-date">
-                                    {new Date(group.sessionDate).toLocaleDateString('en-GB')}{' '}
-                                    {new Date(group.sessionDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(group.sessionDate).toLocaleDateString('tr-TR')}{' '}
+                                    {new Date(group.sessionDate).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
 
@@ -342,14 +342,14 @@ const InvoiceManagement = () => {
                                             )}
                                             <div className="inv-product-info">
                                                 <span className="inv-product-name">
-                                                    {order.product?.name || `Product #${order.productId}`}
+                                                    {order.product?.name || `Urun #${order.productId}`}
                                                 </span>
                                                 <span className="inv-product-unit">
-                                                    ${unitPrice} × {order.quantity}
+                                                    {unitPrice} TL × {order.quantity}
                                                 </span>
                                             </div>
                                             <span className="inv-row-total">
-                                                ${order.totalPrice?.toFixed ? order.totalPrice.toFixed(2) : order.totalPrice}
+                                                {order.totalPrice?.toFixed ? order.totalPrice.toFixed(2) : order.totalPrice} TL
                                             </span>
                                         </div>
                                     );
@@ -358,29 +358,29 @@ const InvoiceManagement = () => {
 
                             {/* Grand Total */}
                             <div className="inv-grand-total">
-                                Total: <strong>${group.grandTotal.toFixed(2)}</strong>
+                                Toplam: <strong>{group.grandTotal.toFixed(2)} TL</strong>
                             </div>
 
                             {/* Actions */}
                             <div className="inv-actions">
-                                <Tooltip title="View PDF in new tab">
+                                <Tooltip title="PDF'i yeni sekmede görüntüle">
                                     <Button
                                         icon={<FilePdfOutlined />}
                                         className="inv-btn-view"
                                         loading={generatingKey === group.key + 'view'}
                                         onClick={() => handlePDF(group, 'view')}
                                     >
-                                        View
+                                        Görüntüle
                                     </Button>
                                 </Tooltip>
-                                <Tooltip title="Download as PDF">
+                                <Tooltip title="PDF olarak indir">
                                     <Button
                                         icon={<DownloadOutlined />}
                                         className="inv-btn-dl"
                                         loading={generatingKey === group.key + 'download'}
                                         onClick={() => handlePDF(group, 'download')}
                                     >
-                                        Download
+                                        İndir
                                     </Button>
                                 </Tooltip>
                             </div>

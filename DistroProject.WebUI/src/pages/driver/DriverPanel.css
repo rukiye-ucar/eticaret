@@ -463,13 +463,14 @@
 
 .route-info-text strong {
     display: block;
-    color: #fff;
+    color: #1a1445;
     font-size: 1rem;
+    font-weight: 700;
     margin-bottom: 4px;
 }
 
 .route-info-text p {
-    color: #8a8fb0;
+    color: #555e78;
     font-size: 0.82rem;
     margin: 0;
 }
@@ -611,3 +612,66 @@
     opacity: 0.5;
     margin-top: 6px;
 }
+
+/* ===== Ant Design Alert Fixes ===== */
+.driver-panel .ant-alert,
+.route-tab-content .ant-alert {
+    border-radius: 10px !important;
+}
+
+/* Error alert */
+.driver-panel .ant-alert-error,
+.route-tab-content .ant-alert-error {
+    background: #fff1f0 !important;
+    border-color: #ffa39e !important;
+}
+
+.driver-panel .ant-alert-error .ant-alert-message,
+.route-tab-content .ant-alert-error .ant-alert-message,
+.driver-panel .ant-alert-error .ant-alert-description,
+.route-tab-content .ant-alert-error .ant-alert-description,
+.driver-panel .ant-alert-error span:not(.anticon),
+.route-tab-content .ant-alert-error span:not(.anticon) {
+    color: #a8071a !important;
+    font-weight: 600 !important;
+}
+
+.driver-panel .ant-alert-error .ant-alert-icon,
+.route-tab-content .ant-alert-error .ant-alert-icon {
+    color: #cf1322 !important;
+}
+
+/* Info alert */
+.driver-panel .ant-alert-info,
+.route-tab-content .ant-alert-info {
+    background: #e6f4ff !important;
+    border-color: #91caff !important;
+}
+
+.driver-panel .ant-alert-info .ant-alert-message,
+.route-tab-content .ant-alert-info .ant-alert-message,
+.driver-panel .ant-alert-info span:not(.anticon),
+.route-tab-content .ant-alert-info span:not(.anticon) {
+    color: #003eb3 !important;
+    font-weight: 600 !important;
+}
+
+.driver-panel .ant-alert-info .ant-alert-icon,
+.route-tab-content .ant-alert-info .ant-alert-icon {
+    color: #1677ff !important;
+}
+
+/* Warning alert */
+.driver-panel .ant-alert-warning,
+.route-tab-content .ant-alert-warning {
+    background: #fffbe6 !important;
+    border-color: #ffe58f !important;
+}
+
+.driver-panel .ant-alert-warning .ant-alert-message,
+.route-tab-content .ant-alert-warning .ant-alert-message,
+.driver-panel .ant-alert-warning span:not(.anticon),
+.route-tab-content .ant-alert-warning span:not(.anticon) {
+    color: #613400 !important;
+    font-weight: 600 !important;
+}
