@@ -8,8 +8,20 @@ using OpenApiModels = Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Database Connection
+// Önce environment variable'dan oku (Production için güvenli yol)
+// Environment variable adı: ConnectionStrings__DefaultConnection
+// Eğer environment variable yoksa appsettings.json / appsettings.Development.json'dan oku
+var connectionString =
+    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+    throw new InvalidOperationException(
+        "Connection string bulunamadı. Lütfen 'ConnectionStrings__DefaultConnection' " +
+        "environment variable'ını veya appsettings.json içindeki 'DefaultConnection' değerini tanımlayın.");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 // --- CORS SETTINGS (SERVICE DEFINITION) ---
 builder.Services.AddCors(options =>
@@ -32,7 +44,12 @@ builder.Services.AddControllers()
 builder.Services.AddHttpClient(); // For RouteController OSRM calls
 
 // 2. JWT Settings
-var key = Encoding.ASCII.GetBytes("B374A26A71448593AA2744749EF41EE3"); 
+// JWT secret önce environment variable'dan (JWT__Secret), yoksa appsettings'ten okunur
+var jwtSecret =
+    Environment.GetEnvironmentVariable("JWT__Secret")
+    ?? builder.Configuration["AppSettings:Secret"]
+    ?? "B374A26A71448593AA2744749EF41EE3";
+var key = Encoding.ASCII.GetBytes(jwtSecret);
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,8 +108,16 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll"); // Activating CORS policy here
 
+// Production'da React build dosyalarını (wwwroot) serve et
+app.UseDefaultFiles();   // index.html'i varsayılan dosya olarak sun
+app.UseStaticFiles();    // wwwroot içindeki tüm statik dosyaları sun
+
 app.UseAuthentication(); 
 app.UseAuthorization();  
 app.MapControllers();
+
+// SPA Fallback: API dışındaki tüm route'ları React'e yönlendir
+// Bu sayede React Router doğru çalışır (örn: /products, /cart gibi sayfalar)
+app.MapFallbackToFile("index.html");
 
 app.Run();

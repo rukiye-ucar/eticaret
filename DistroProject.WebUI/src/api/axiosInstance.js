@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-
+// Production'da frontend ve backend aynı domain'de çalışır (albatrosrov.com)
+// Bu yüzden relative URL kullanıyoruz: /api
+// Development'ta Vite proxy üzerinden yönlendirme yapılır (vite.config.js'e proxy ekleyin)
 const axiosInstance = axios.create({
-    baseURL: window.location.hostname === 'localhost' ? 'http://localhost:5296/api' : 'http://192.168.0.199:5296/api',
+    baseURL: '/api',
     headers: {
         'Accept-Language': 'en-US',
         'Content-Type': 'application/json'

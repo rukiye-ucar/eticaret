@@ -6,6 +6,11 @@
 # dotenv files
 .env
 
+# Sensitive settings - GitHub'a gönderilmemeli!
+appsettings.Production.json
+appsettings.Local.json
+*.pubxml.user
+
 # User-specific files
 *.rsuser
 *.suo

@@ -106,4 +106,15 @@ export default defineConfig({
       }
     })
   ],
+  // Development ortamında /api isteklerini backend'e yönlendir
+  // Production'da bu gerekli değil (frontend ve backend aynı sunucuda)
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5296',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  }
 })
