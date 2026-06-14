@@ -72,16 +72,16 @@ Sistemin tüm e-ticaret, lojistik ve finansal süreçlerinin yönetildiği merke
 Aşağıda platformu test edebilmeniz için kullanabileceğiniz örnek kullanıcı giriş bilgileri yer almaktadır:
 
 ### 👑 Yönetici (Admin) Giriş Bilgileri
-* **E-posta:** `[BURAYA YÖNETİCİ E-POSTA ADRESİNİ YAZINIZ]`
-* **Şifre:** `[BURAYA YÖNETİCİ ŞİFRESİNİ YAZINIZ]`
+* **E-posta:** `admin@test.com]`
+* **Şifre:** `123456`
 
 ### 🚚 Şoför (Driver) Giriş Bilgileri
-* **E-posta:** `[BURAYA ŞOFÖR E-POSTA ADRESİNİ YAZINIZ]`
-* **Şifre:** `[BURAYA ŞOFÖR ŞİFRESİNİ YAZINIZ]`
+* **E-posta:** `elif@gmail.com`
+* **Şifre:** `123456`
 
 ### 👤 Müşteri (Customer) Giriş Bilgileri
-* **E-posta:** `[BURAYA MÜŞTERİ E-POSTA ADRESİNİ YAZINIZ]`
-* **Şifre:** `[BURAYA MÜŞTERİ ŞİFRESİNİ YAZINIZ]`
+* **E-posta:** `rabia@gmail.com`
+* **Şifre:** `123456`
 
 ---
 
